@@ -1,7 +1,7 @@
 import unittest
 import random
 import numpy as np
-from data_utils import load_CIFAR10
+from util.data import load_CIFAR10
 from classifiers import KNearestNeighbor
 
 cifar10_dir = 'datasets/cifar-10-batches-py'

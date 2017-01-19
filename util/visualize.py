@@ -52,7 +52,7 @@ def vis_grid(Xs):
   ming = G.min()
   G = (G - ming)/(maxg-ming)
   return G
-  
+
 def vis_nn(rows):
   """ visualize array of arrays of images """
   N = len(rows)
@@ -68,6 +68,3 @@ def vis_nn(rows):
   ming = G.min()
   G = (G - ming)/(maxg-ming)
   return G
-
-
-
