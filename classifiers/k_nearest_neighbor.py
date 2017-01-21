@@ -104,9 +104,18 @@ class KNearestNeighbor(object):
     num_train = self.train_points.shape[0]
     dists = np.zeros((num_test, num_train))
 
+    # This computes the distances as $d_i = \sqrt{\sum_j (x_i - y_j)^2}$, or
+    # equivalently, $d_i = \sqrt{\sum_j x_i^2 + y_j^2 - 2 x \dot y}$ by
+    # leveraging the properties of NumPy broadcast summations. Specifically, it
+    # utilizes the fact that addition across (m, 1) and (1, n) tensors produces
+    # a (m, n) tensor. See
+    # https://docs.scipy.org/doc/numpy/user/basics.broadcasting.html for more
+    # information about broadcasting. After the broadcasted squares, we do a
+    # matrix inner product to get the $2 \times x \dot y$ terms. Then NumPy
+    # computes the $\sqrt$ per-element. This gets us our distances.
     x, y = test_points, self.train_points
-    x2 = np.sum(x**2, axis=1, keepdims=True)
-    y2 = np.sum(y**2, axis=1)
+    x2 = np.sum(x**2, axis=1, keepdims=True)  # (m, 1)
+    y2 = np.sum(y**2, axis=1)                 # (1, n)
     xy = np.dot(x, y.T)
     dists = np.sqrt(x2 - 2*xy + y2)
 
@@ -129,8 +138,8 @@ class KNearestNeighbor(object):
     num_test = dists.shape[0]
     y_pred = np.zeros(num_test)
     for i in xrange(num_test):
-      # A list of length k storing the labels of the k nearest neighbors to
-      # the ith test point.
+      # A list of length k storing the labels of the k nearest neighbors to the
+      # ith test point.
       closest_y = []
       closest_sorted = np.argsort(dists[i])
       for j in range(k):
