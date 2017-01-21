@@ -101,5 +101,8 @@ class TestSomething(unittest.TestCase):
     one_loop_time = self.time_function(self.classifier.compute_distances_one_loop, self.test_points)
     no_loop_time = self.time_function(self.classifier.compute_distances_no_loops, self.test_points)
 
+    # The vectorized no-loops version of the distance computatino should be
+    # about 10x faster than the 1-loop version; the 1-loop version should be of
+    # similar speed to the 2-loop version
     self.assertLess(one_loop_time, two_loop_time)
-    self.assertLess(no_loop_time, one_loop_time)
+    self.assertLess(no_loop_time*10, one_loop_time)
