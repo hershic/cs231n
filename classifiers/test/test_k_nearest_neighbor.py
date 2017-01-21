@@ -6,7 +6,7 @@ from classifiers import KNearestNeighbor
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
-class TestSomething(unittest.TestCase):
+class TestKNearestNeighbor(unittest.TestCase):
   def setUp(self):
     self.num_train = 500
     self.num_test = 50
