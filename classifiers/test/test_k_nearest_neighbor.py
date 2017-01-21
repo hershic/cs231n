@@ -82,3 +82,24 @@ class TestSomething(unittest.TestCase):
     difference = np.linalg.norm(dists_one - dists_none, ord='fro')
     self.assertAlmostEqual(difference, 0.0)
 
+
+  # Auxiliary method to time function calls
+  def time_function(self, f, *args):
+    """
+    Call a function f with args and return the time (in seconds) that it took to execute.
+    """
+    import time
+    tic = time.time()
+    f(*args)
+    toc = time.time()
+    return toc - tic
+
+
+  # Ensure the algorithms are sane
+  def test_timing(self):
+    two_loop_time = self.time_function(self.classifier.compute_distances_two_loops, self.test_points)
+    one_loop_time = self.time_function(self.classifier.compute_distances_one_loop, self.test_points)
+    no_loop_time = self.time_function(self.classifier.compute_distances_no_loops, self.test_points)
+
+    self.assertLess(one_loop_time, two_loop_time)
+    self.assertLess(no_loop_time, one_loop_time)
