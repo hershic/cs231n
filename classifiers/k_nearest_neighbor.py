@@ -113,6 +113,8 @@ class KNearestNeighbor(object):
     # information about broadcasting. After the broadcasted squares, we do a
     # matrix inner product to get the $2 \times x \dot y$ terms. Then NumPy
     # computes the $\sqrt$ per-element. This gets us our distances.
+    # Retrieved from StackOverflow:
+    # http://stackoverflow.com/questions/32856726/memory-efficient-l2-norm-using-python-broadcasting
     x, y = test_points, self.train_points
     x2 = np.sum(x**2, axis=1, keepdims=True)  # (m, 1)
     y2 = np.sum(y**2, axis=1)                 # (1, n)
