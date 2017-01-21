@@ -10,21 +10,23 @@ class TestSomething(unittest.TestCase):
     def setUp(self):
         self.X_train, self.y_train, self.X_test, self.y_test = load_CIFAR10(cifar10_dir)
         self.accuracy = 0.0
-        pass
+
 
     def subsample(self):
-        num_training = 5000
+        num_training = 500
+        num_test = 50
+
         mask = range(num_training)
         X_train = self.X_train[mask]
         y_train = self.y_train[mask]
 
-        num_test = 500
         mask = range(num_test)
         X_test = self.X_test[mask]
         y_test = self.y_test[mask]
+
         return (X_train, y_train, X_test, y_test, num_training, num_test)
 
-    @unittest.skip("done with this guy")
+
     def test_dist_two_loops(self):
         (X_train, y_train, X_test, y_test, num_training, num_test) = self.subsample()
 
@@ -43,7 +45,9 @@ class TestSomething(unittest.TestCase):
 
         num_correct = np.sum(y_test_pred == y_test)
         accuracy = float(num_correct) / num_test
-        print 'Got %d / %d correct => accuracy: %f' % (num_correct, num_test, accuracy)
+        self.assertLess(accuracy, 0.3)
+        self.assertGreater(accuracy, 0.1)
+
 
     def test_dist_one_loop(self):
         (X_train, y_train, X_test, y_test, num_training, num_test) = self.subsample()
@@ -67,15 +71,4 @@ class TestSomething(unittest.TestCase):
         # root of the squared sum of differences of all elements; in other words, reshape
         # the matrices into vectors and compute the Euclidean distance between them.
         difference = np.linalg.norm(dists - dists_one, ord='fro')
-        print 'Difference was: %f' % (difference, )
-        if difference < 0.001:
-          print 'Good! The distance matrices are the same'
-        else:
-          print 'Uh-oh! The distance matrices are different'
-
-
-    def tearDown(self):
-        pass
-
-if __name__ == '__main__':
-    unittest.main()
+        self.assertAlmostEqual(difference, 0.0)
