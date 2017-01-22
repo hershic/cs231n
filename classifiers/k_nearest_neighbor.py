@@ -1,11 +1,11 @@
 import numpy as np
 
+
 class KNearestNeighbor(object):
   """ a kNN classifier with L2 distance """
 
   def __init__(self):
     pass
-
 
   def train(self, points, labels):
     """
@@ -20,7 +20,6 @@ class KNearestNeighbor(object):
     """
     self.train_points = points
     self.train_labels = labels
-
 
   def predict(self, test_points, k=1, num_loops=0):
     """
@@ -47,7 +46,6 @@ class KNearestNeighbor(object):
       raise ValueError('Invalid value %d for num_loops' % num_loops)
 
     return self.predict_labels(dists, k=k)
-
 
   def compute_distances_two_loops(self, test_points):
     """
@@ -76,7 +74,6 @@ class KNearestNeighbor(object):
         trainPoint = self.train_points[j]
         dists[i][j] = np.sqrt(np.sum(np.square(testPoint - trainPoint)))
     return dists
-
 
   def compute_distances_one_loop(self, test_points):
     """
@@ -121,7 +118,6 @@ class KNearestNeighbor(object):
     dists = np.sqrt(x2 - 2*xy + y2)
 
     return dists
-
 
   def predict_labels(self, dists, k=1):
     """
