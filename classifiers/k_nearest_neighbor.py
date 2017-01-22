@@ -67,8 +67,8 @@ class KNearestNeighbor(object):
     num_train = self.train_points.shape[0]
     dists = np.zeros((num_test, num_train))
 
-    for i in xrange(num_test):
-      for j in xrange(num_train):
+    for i in range(num_test):
+      for j in range(num_train):
         # Compute the l2 distance between the ith test point and the jth
         # training point, and store the result in dists[i, j]. You should
         # not use a loop over dimension.
@@ -88,10 +88,9 @@ class KNearestNeighbor(object):
     num_test = test_points.shape[0]
     num_train = self.train_points.shape[0]
     dists = np.zeros((num_test, num_train))
-    for i in xrange(num_test):
+    for i in range(num_test):
       dists[i] = np.sqrt(np.sum(np.square(test_points[i] - self.train_points[:]), axis=1))
     return dists
-
 
   def compute_distances_no_loops(self, test_points):
     """
@@ -139,7 +138,7 @@ class KNearestNeighbor(object):
     """
     num_test = dists.shape[0]
     y_pred = np.zeros(num_test)
-    for i in xrange(num_test):
+    for i in range(num_test):
       # A list of length k storing the labels of the k nearest neighbors to the
       # ith test point.
       closest_y = []
