@@ -1,7 +1,8 @@
 import six.moves.cPickle as pickle
 import numpy as np
 import os
-# from scipy.misc import imread
+from scipy.misc import imread
+
 
 def load_CIFAR_batch(filename):
   """ load single batch of cifar """
@@ -12,6 +13,7 @@ def load_CIFAR_batch(filename):
     X = X.reshape(-1, 3, 32, 32).transpose(0,2,3,1).astype("float")
     Y = np.array(Y)
     return X, Y
+
 
 def load_CIFAR10(ROOT):
   """ load all of cifar """
@@ -27,6 +29,7 @@ def load_CIFAR10(ROOT):
   del X, Y
   Xte, Yte = load_CIFAR_batch(os.path.join(ROOT, 'test_batch'))
   return Xtr, Ytr, Xte, Yte
+
 
 def load_tiny_imagenet(path, dtype=np.float32):
   """
@@ -79,9 +82,9 @@ def load_tiny_imagenet(path, dtype=np.float32):
     y_train_block = wnid_to_label[wnid] * np.ones(num_images, dtype=np.int64)
     for j, img_file in enumerate(filenames):
       img_file = os.path.join(path, 'train', wnid, 'images', img_file)
-      # img = imread(img_file)
+      img = imread(img_file)
       if img.ndim == 2:
-        ## grayscale file
+        # grayscale file
         img.shape = (64, 64, 1)
       X_train_block[j] = img.transpose(2, 0, 1)
     X_train.append(X_train_block)
@@ -104,7 +107,7 @@ def load_tiny_imagenet(path, dtype=np.float32):
     X_val = np.zeros((num_val, 3, 64, 64), dtype=dtype)
     for i, img_file in enumerate(img_files):
       img_file = os.path.join(path, 'val', 'images', img_file)
-      # img = imread(img_file)
+      img = imread(img_file)
       if img.ndim == 2:
         img.shape = (64, 64, 1)
       X_val[i] = img.transpose(2, 0, 1)
@@ -116,7 +119,7 @@ def load_tiny_imagenet(path, dtype=np.float32):
   X_test = np.zeros((len(img_files), 3, 64, 64), dtype=dtype)
   for i, img_file in enumerate(img_files):
     img_file = os.path.join(path, 'test', 'images', img_file)
-    # img = imread(img_file)
+    img = imread(img_file)
     if img.ndim == 2:
       img.shape = (64, 64, 1)
     X_test[i] = img.transpose(2, 0, 1)
@@ -129,7 +132,8 @@ def load_tiny_imagenet(path, dtype=np.float32):
       for line in f:
         line = line.split('\t')
         img_file_to_wnid[line[0]] = line[1]
-    y_test = [wnid_to_label[img_file_to_wnid[img_file]] for img_file in img_files]
+    y_test = [wnid_to_label[img_file_to_wnid[img_file]]
+              for img_file in img_files]
     y_test = np.array(y_test)
 
   return class_names, X_train, y_train, X_val, y_val, X_test, y_test
