@@ -8,6 +8,17 @@ class ImporterCIFAR10(ImporterBase):
   def __init__(self, dir):
     self.dir = dir
 
+  def import_all(self):
+    points = []
+    labels = []
+    for batch in self.import_batch():
+      points.append(batch[0])
+      labels.append(batch[1])
+    return {
+      'points': np.concatenate(points),
+      'labels': np.concatenate(labels)
+    }
+
   def import_batch(self):
     for batch in range(1, 6):
       filename = os.path.join(self.dir, 'data_batch_%d' % (batch, ))

@@ -7,9 +7,9 @@ class PartitionerKFolds:
     # Don't need to do anything here.
     pass
 
-  def partition(self, num_folds, points, labels, roll_amount):
-    points_split = np.roll(np.array_split(points), roll_amount, axis=0)
-    labels_split = np.roll(np.array_split(labels), roll_amount, axis=0)
+  def partition(self, data, num_folds, roll_amount):
+    points_split = np.array_split(data['points'], num_folds)
+    labels_split = np.array_split(data['labels'], num_folds)
 
     return {
       'train': {
@@ -17,7 +17,7 @@ class PartitionerKFolds:
         'labels': labels_split[0]
       },
       'test': {
-        'points': points_split[1:],
-        'labels': labels_split[1:]
+        'points': np.concatenate(points_split[1:]),
+        'labels': np.concatenate(labels_split[1:])
       }
     }

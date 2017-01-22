@@ -3,6 +3,10 @@ import numpy as np
 from util.data import load_CIFAR10
 from classifiers import KNearestNeighbor
 
+from partitioners.partitioner_k_folds import PartitionerKFolds
+from samplers.sampler_range_mask import SamplerRangeMask
+from importers.importer_cifar10 import ImporterCIFAR10
+
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
 
@@ -11,14 +15,20 @@ class TestKNearestNeighbor(unittest.TestCase):
     self.num_train = 500
     self.num_test = 50
 
-    train_points, train_labels, test_points, test_labels = load_CIFAR10(cifar10_dir)
-    (train_points, train_labels, test_points, test_labels) = \
-      self.subsample(train_points, train_labels, test_points, test_labels, self.num_train, self.num_test)
+    sampler = SamplerRangeMask()
+    partitioner = PartitionerKFolds()
+    importer = ImporterCIFAR10(cifar10_dir)
 
-    self.train_points = np.reshape(train_points, (train_points.shape[0], -1))
-    self.train_labels = train_labels
-    self.test_points = np.reshape(test_points, (test_points.shape[0], -1))
-    self.test_labels = test_labels
+    data = importer.import_all()
+    data = partitioner.partition(data, 6, 0)
+
+    self.train_points = sampler.sample(data['train']['points'], self.num_train)
+    self.train_labels = sampler.sample(data['train']['labels'], self.num_train)
+    self.test_points = sampler.sample(data['test']['points'], self.num_test)
+    self.test_labels = sampler.sample(data['test']['labels'], self.num_test)
+
+    self.train_points = np.reshape(self.train_points, (self.train_points.shape[0], -1))
+    self.test_points = np.reshape(self.test_points, (self.test_points.shape[0], -1))
 
     self.classifier = KNearestNeighbor()
     self.classifier.train(self.train_points, self.train_labels)
