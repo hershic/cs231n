@@ -1,6 +1,6 @@
 import numpy as np
 from itertools import chain
-from importer_base import ImporterBase
+from importers.importer_base import ImporterBase
 
 
 class ImporterStub(ImporterBase):
@@ -17,6 +17,6 @@ class ImporterStub(ImporterBase):
   # abc
   def import_batch(self):
     for num in range(10):
-      nig = [(self.CLASS_SHAPE,), self.DATA_SHAPE]
+      size = [(self.CLASS_SHAPE,), self.DATA_SHAPE]
       yield (np.zeros(self.CLASS_SHAPE),
-             np.zeros(list(chain(*nig))))
+             np.zeros(list(chain(*size))))
