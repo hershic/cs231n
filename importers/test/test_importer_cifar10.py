@@ -1,6 +1,5 @@
 import unittest
 from importers.importer_cifar10 import ImporterCIFAR10
-import os
 
 
 class TestImporterCIFAR10(unittest.TestCase):
