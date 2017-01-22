@@ -12,7 +12,6 @@ class TestKNearestNeighbor(unittest.TestCase):
     self.num_test = 50
 
     train_points, train_labels, test_points, test_labels = load_CIFAR10(cifar10_dir)
-    self.accuracy = 0.0
     (train_points, train_labels, test_points, test_labels) = \
       self.subsample(train_points, train_labels, test_points, test_labels, self.num_train, self.num_test)
 
