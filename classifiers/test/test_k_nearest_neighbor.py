@@ -39,14 +39,14 @@ class TestKNearestNeighbor(unittest.TestCase):
   def test_dist_two_loops(self):
     dists_two = self.classifier.compute_distances_two_loops(self.test_points)
 
-    # Now implement the function predict_labels and run the code below:
-    # We use k = 1 (which is Nearest Neighbor).
+    # Now implement the function predict_labels and run the code below: We use k
+    # = 1 (which is Nearest Neighbor).
     test_labels_pred = self.classifier.predict_labels(dists_two, k=5)
 
     # Compute and print the fraction of correctly predicted examples
 
-    # accuracy should be somewhere around 15-25% depending on the
-    # subsampling pattern
+    # accuracy should be somewhere around 15-25% depending on the subsampling
+    # pattern
     num_correct = np.sum(test_labels_pred == self.test_labels)
     accuracy = float(num_correct) / self.num_test
     self.assertGreater(num_correct, 1)
@@ -55,9 +55,9 @@ class TestKNearestNeighbor(unittest.TestCase):
 
 
   def test_dist_one_loop(self):
-    # Now lets speed up distance matrix computation by using partial vectorization
-    # with one loop. Implement the function compute_distances_one_loop and run the
-    # code below:
+    # Now lets speed up distance matrix computation by using partial
+    # vectorization with one loop. Implement the function
+    # compute_distances_one_loop and run the code below:
     dists_two = self.classifier.compute_distances_two_loops(self.test_points)
     dists_one = self.classifier.compute_distances_one_loop(self.test_points)
 
@@ -85,7 +85,8 @@ class TestKNearestNeighbor(unittest.TestCase):
   # Auxiliary method to time function calls
   def time_function(self, f, *args):
     """
-    Call a function f with args and return the time (in seconds) that it took to execute.
+    Call a function f with args and return the time (in seconds) that it took to
+    execute.
     """
     import time
     tic = time.time()
