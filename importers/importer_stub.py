@@ -9,12 +9,11 @@ class ImporterStub(ImporterBase):
   DATA_SHAPE = (3, 5, 5)
   CLASS_SHAPE = 10
 
-  # abc
   def __init__(self, filename):
     self.filename = filename
     # do a filesystem scan to find out how many batches there are
 
-  # abc
+  # generator
   def import_batch(self):
     for num in range(10):
       size = [(self.CLASS_SHAPE,), self.DATA_SHAPE]
