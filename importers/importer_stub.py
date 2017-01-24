@@ -6,8 +6,8 @@ from importers.importer_base import ImporterBase
 class ImporterStub(ImporterBase):
   # Data shape is in the shape of (NUM, DATA_SHAPE), due to NUM elements of
   # DATA_SHAPE shape; classification shape is in the size of NUM
-  DATA_SHAPE = (3, 5, 5)
   CLASS_SHAPE = 10
+  DATA_SHAPE = (3, 5, 5)
 
   def __init__(self, filename):
     self.filename = filename
