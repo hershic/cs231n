@@ -11,4 +11,4 @@ class SamplerRangeMask(SamplerBase):
     pass
 
   def sample(self, points, num, start=0):
-    return points[start:start+num]
+    return points[start:start + num]
