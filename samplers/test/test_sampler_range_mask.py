@@ -26,10 +26,10 @@ class TestSamplerRangeMask(unittest.TestCase):
 
     trial_bounds = 100
     for trial in range(trial_bounds):
-      points_size = random.randint(0,trial_bounds)
-      sample_size = random.randint(0,points_size)
+      points_size = random.randint(1, trial_bounds)
+      sample_size = random.randint(1, points_size)
       points = np.zeros(points_size)
-      sample = self.sampler.sample(points,sample_size)
+      sample = self.sampler.sample(points, sample_size)
 
-      self.assertEqual(points.shape[:-1], sample.shape[:-1])
-      self.assertLessEqual(sample.shape[-1], points.shape[-1])
+      self.assertGreater(points.shape[0], 0)
+      self.assertLessEqual(sample.shape[0], points.shape[0])
