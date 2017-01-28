@@ -34,11 +34,11 @@ class TestKNearestNeighbor(unittest.TestCase):
     self.classifier.train(self.train_points, self.train_labels)
 
   def test_dist_two_loops(self):
-    dists_two = self.classifier.compute_distances_two_loops(self.test_points)
+    dists_two = self.classifier._compute_distances_two_loops(self.test_points)
 
     # Now implement the function predict_labels and run the code below: We use
     # k = 1 (which is Nearest Neighbor).
-    test_labels_pred = self.classifier.predict_labels(dists_two, k=5)
+    test_labels_pred = self.classifier._predict_labels(dists_two, k=5)
 
     # Compute and print the fraction of correctly predicted examples
 
@@ -54,8 +54,8 @@ class TestKNearestNeighbor(unittest.TestCase):
     # Now lets speed up distance matrix computation by using partial
     # vectorization with one loop. Implement the function
     # compute_distances_one_loop and run the code below:
-    dists_two = self.classifier.compute_distances_two_loops(self.test_points)
-    dists_one = self.classifier.compute_distances_one_loop(self.test_points)
+    dists_two = self.classifier._compute_distances_two_loops(self.test_points)
+    dists_one = self.classifier._compute_distances_one_loop(self.test_points)
 
     # To ensure that our vectorized implementation is correct, we make sure
     # that it agrees with the naive implementation. There are many ways to
@@ -70,8 +70,8 @@ class TestKNearestNeighbor(unittest.TestCase):
   def test_dist_no_loops(self):
     # Now implement the fully vectorized version inside
     # compute_distances_no_loops and run the code
-    dists_one = self.classifier.compute_distances_one_loop(self.test_points)
-    dists_none = self.classifier.compute_distances_no_loops(self.test_points)
+    dists_one = self.classifier._compute_distances_one_loop(self.test_points)
+    dists_none = self.classifier._compute_distances_no_loops(self.test_points)
 
     # check that the distance matrix agrees with the one we computed before:
     difference = np.linalg.norm(dists_one - dists_none, ord='fro')
@@ -91,9 +91,9 @@ class TestKNearestNeighbor(unittest.TestCase):
 
   # Ensure the algorithms are sane
   def test_timing(self):
-    two_loop_time = self.time_function(self.classifier.compute_distances_two_loops, self.test_points)
-    one_loop_time = self.time_function(self.classifier.compute_distances_one_loop, self.test_points)
-    no_loop_time = self.time_function(self.classifier.compute_distances_no_loops, self.test_points)
+    two_loop_time = self.time_function(self.classifier._compute_distances_two_loops, self.test_points)
+    one_loop_time = self.time_function(self.classifier._compute_distances_one_loop, self.test_points)
+    no_loop_time = self.time_function(self.classifier._compute_distances_no_loops, self.test_points)
 
     # The vectorized no-loops version of the distance computatino should be
     # about 10x faster than the 1-loop version; the 1-loop version should be of
