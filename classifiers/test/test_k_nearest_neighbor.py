@@ -33,17 +33,6 @@ class TestKNearestNeighbor(unittest.TestCase):
     self.classifier = KNearestNeighbor()
     self.classifier.train(self.train_points, self.train_labels)
 
-  def subsample(self, train_points, train_labels, test_points, test_labels, num_train, num_test):
-    mask = range(num_train)
-    train_points = train_points[mask]
-    train_labels = train_labels[mask]
-
-    mask = range(num_test)
-    test_points = test_points[mask]
-    test_labels = test_labels[mask]
-
-    return (train_points, train_labels, test_points, test_labels)
-
   def test_dist_two_loops(self):
     dists_two = self.classifier.compute_distances_two_loops(self.test_points)
 
