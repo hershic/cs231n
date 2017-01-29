@@ -19,7 +19,8 @@ class LayerFullyConnected:
     def forward_naive(self, weights, points):
         """
         Computes the forward pass of a fully connected layer with the input
-        weights, returning the category scores for the input points.
+        weights in a naive-unvectorized implementation, returning the category
+        scores for the input points.
 
         Inputs:
         - weights: (num_classifications, point_size)
@@ -32,4 +33,22 @@ class LayerFullyConnected:
         scores = np.zeros((num_points, num_classifications))
         for i in range(num_points):
             scores[i] = weights.dot(points[i])
+        return scores
+
+
+    def forward_vectorized(self, weights, points):
+        """
+        Computes the forward pass of a fully connected layer with the input
+        weights in a vectorized implementation, returning the category scores
+        for the input points.
+
+        Inputs:
+        - weights: (num_classifications, point_size)
+        - points: (num_points, point_size)
+        Outputs:
+        - scores: (num_points, num_classifications)
+        """
+        num_classifications = weights.shape[0]
+        num_points = points.shape[0]
+        scores = weights.dot(points.T).T
         return scores

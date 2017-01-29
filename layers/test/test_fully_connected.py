@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from layers.fully_connected import LayerFullyConnected
-
+from utils.timing import time_function
 
 class TestLayerFullyConnected(unittest.TestCase):
     def setUp(self):
@@ -41,5 +41,14 @@ class TestLayerFullyConnectedDirected(unittest.TestCase):
 
     def test_vectorized_directed(self):
         layer = LayerFullyConnected(self.weights.shape, self.points.shape)
-        scores = layer.forward_naive(self.weights, self.points)
+        scores = layer.forward_vectorized(self.weights, self.points)
         self.assertTrue(np.array_equal(scores, self.expected))
+
+    def test_timing(self):
+        layer = LayerFullyConnected(self.weights.shape, self.points.shape)
+        layer = LayerFullyConnected(self.weights.shape, self.points.shape)
+
+        time_naive = time_function(layer.forward_naive, self.weights, self.points)
+        time_vectorized = time_function(layer.forward_vectorized, self.weights, self.points)
+
+        self.assertLess(time_vectorized * 2, time_naive)
