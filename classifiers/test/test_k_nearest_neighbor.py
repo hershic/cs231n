@@ -3,7 +3,7 @@ import numpy as np
 
 from classifiers import KNearestNeighbor
 from utils.data import load_CIFAR10
-from utils.time import time_function
+from utils.timing import time_function
 
 from partitioners.partitioner_k_folds import PartitionerKFolds
 from samplers.sampler_range_mask import SamplerRangeMask

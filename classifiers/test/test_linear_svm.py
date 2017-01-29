@@ -6,7 +6,7 @@ from importers.importer_cifar10 import ImporterCIFAR10
 from partitioners.partitioner_range_split import PartitionerRangeSplit
 from samplers.sampler_random import SamplerRandom
 from utils.data import load_CIFAR10
-from utils.time import time_function
+from utils.timing import time_function
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
