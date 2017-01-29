@@ -6,16 +6,17 @@ from utils.timing import time_function
 
 class TestLayerFullyConnected(unittest.TestCase):
     def setUp(self):
-        pass
+        num_classes = 10
+        num_points = 500
+        point_size = 1000
+        self.weights = np.random.randn(num_classes, point_size)
+        self.points = np.random.randn(num_points, point_size)
 
-    def test_naive_randomized(self):
-        num_classes = 3
-        num_points = 5
-        point_size = 4
-        weights = np.random.randn(num_classes, point_size)
-        points = np.random.randn(num_points, point_size)
-        layer = LayerFullyConnected(weights.shape, points.shape)
-        scores = layer.forward_naive(weights, points)
+    def test_timing(self):
+        layer = LayerFullyConnected(self.weights.shape, self.points.shape)
+        time_naive = time_function(layer.forward_naive, self.weights, self.points)
+        time_vectorized = time_function(layer.forward_vectorized, self.weights, self.points)
+        self.assertLess(time_vectorized * 2, time_naive)
 
 
 class TestLayerFullyConnectedDirected(unittest.TestCase):
