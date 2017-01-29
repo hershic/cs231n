@@ -10,5 +10,8 @@ class SamplerRangeMask(SamplerBase):
     # The range mask sampler doesn't do anything with the seed.
     pass
 
-  def sample(self, points, num, start=0):
-    return points[start:start + num]
+  def sample(self, dataset, num, start=0):
+    return {
+      'points': dataset['points'][start:start + num],
+      'labels': dataset['labels'][start:start + num]
+    }
