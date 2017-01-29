@@ -14,6 +14,7 @@ class TestLinearSVM(unittest.TestCase):
   def setUp(self):
     self.num_train = 500
     self.num_test = 50
+    self.num_validation = 50
 
     sampler = SamplerRandom()
     partitioner = PartitionerRangeSplit()
@@ -22,13 +23,25 @@ class TestLinearSVM(unittest.TestCase):
     data = importer.import_all()
     data = partitioner.partition(data, .1)
 
-    self.train_points = sampler.sample(data['train']['points'], self.num_train)
-    self.train_labels = sampler.sample(data['train']['labels'], self.num_train)
-    self.test_points = sampler.sample(data['test']['points'], self.num_test)
-    self.test_labels = sampler.sample(data['test']['labels'], self.num_test)
+    train_dataset = sampler.sample(data['train'], self.num_train)
+    validation_dataset = sampler.sample(data['train'], self.num_validation)
+    test_dataset = sampler.sample(data['test'], self.num_test)
 
-    self.train_points = np.reshape(self.train_points, (self.train_points.shape[0], -1))
-    self.test_points = np.reshape(self.test_points, (self.test_points.shape[0], -1))
+    self.train_labels = train_dataset['labels']
+    self.validation_labels = validation_dataset['labels']
+    self.test_labels = test_dataset['labels']
+
+    self.train_points = np.reshape(train_dataset['points'], (train_dataset['points'].shape[0], -1))
+    self.validation_points = np.reshape(validation_dataset['points'], (validation_dataset['points'].shape[0], -1))
+    self.test_points = np.reshape(test_dataset['points'], (test_dataset['points'].shape[0], -1))
+
+    self.classifier = LinearSVM()
+
+    self.classifier.setup(self.train_points)
+    self.classifier.normalize(self.train_points)
+    self.classifier.normalize(self.validation_points)
+    self.classifier.normalize(self.test_points)
+
 
     # X_train = np.hstack([X_train, np.ones((X_train.shape[0], 1))])
     # X_val = np.hstack([X_val, np.ones((X_val.shape[0], 1))])
