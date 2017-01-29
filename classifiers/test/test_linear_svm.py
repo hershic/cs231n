@@ -1,12 +1,12 @@
 import unittest
 import numpy as np
-from util.data import load_CIFAR10
-from classifiers.linear_svm import LinearSVM
 
+from classifiers.linear_svm import LinearSVM
+from importers.importer_cifar10 import ImporterCIFAR10
 from partitioners.partitioner_range_split import PartitionerRangeSplit
 from samplers.sampler_random import SamplerRandom
-from importers.importer_cifar10 import ImporterCIFAR10
-from util.time import time_function
+from utils.data import load_CIFAR10
+from utils.time import time_function
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
