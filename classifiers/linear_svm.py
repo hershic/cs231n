@@ -58,11 +58,11 @@ class LinearSVM(LinearClassifier):
     dW = np.zeros(W.shape)  # initialize the gradient as zero
 
     # compute the loss and the gradient
-    num_classes = W.shape[1]
+    num_classes = W.shape[0]
     num_train = X.shape[0]
     loss = 0.0
     for i in range(num_train):
-      scores = X[i].dot(W)
+      scores = W.dot(X[i])
       correct_class_score = scores[y[i]]
       for j in range(num_classes):
         if j == y[i]:
@@ -83,7 +83,7 @@ class LinearSVM(LinearClassifier):
     # Compute the gradient of the loss function and store it dW.                #
     # Rather that first computing the loss and then computing the derivative,   #
     # it may be simpler to compute the derivative at the same time that the     #
-    # loss is being computedd. As a result you may need to modify some of the    #
+    # loss is being computedd. As a result you may need to modify some of the   #
     # code above to compute the gradient.                                       #
     #############################################################################
 

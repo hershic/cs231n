@@ -43,16 +43,16 @@ class TestLinearSVM(unittest.TestCase):
     self.classifier.normalize(self.validation_points)
     self.classifier.normalize(self.test_points)
 
-  def xtestSVMLossNaive(self):
-    W = np.random.randn(3073, 10) * 0.0001
+  def testSVMLossNaive(self):
+    weights = np.random.randn(10, 3073) * 0.0001
     regularization_strength = 0.00001
     loss, grad = self.classifier.svm_loss_naive(
-        W, self.train_points, self.train_labels, regularization_strength)
+        weights, self.train_points, self.train_labels, regularization_strength)
     self.assertLess(loss, 10)
     self.assertGreater(loss, 8)
 
-  def testSVMLossVectorized(self):
-    W = np.random.randn(3073, 10) * 0.0001
+  def xtestSVMLossVectorized(self):
+    W = np.random.randn(10, 3073) * 0.0001
     regularization_strength = 0.00001
     loss, grad = self.classifier.svm_loss_vectorized(
         W, self.train_points, self.train_labels, regularization_strength)
@@ -60,16 +60,16 @@ class TestLinearSVM(unittest.TestCase):
     self.assertLess(loss, 10)
     self.assertGreater(loss, 8)
 
-  def testTiming(self):
-    W = np.random.randn(3073, 10) * 0.0001
+  def xtestTiming(self):
+    weights = np.random.randn(10, 3073) * 0.0001
     regularization_strength = 0.00001
 
     naive_time = \
-      time_function(self.classifier.svm_loss_naive, W, self.train_points,
+      time_function(self.classifier.svm_loss_naive, weights, self.train_points,
                          self.train_labels, regularization_strength)
 
     vectorized_time = \
-      time_function(self.classifier.svm_loss_vectorized, W, self.train_points,
+      time_function(self.classifier.svm_loss_vectorized, weights, self.train_points,
                          self.train_labels, regularization_strength)
 
     print(naive_time)
