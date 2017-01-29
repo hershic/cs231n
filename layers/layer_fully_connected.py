@@ -47,5 +47,4 @@ class LayerFullyConnected:
         Outputs:
         - scores: (num_points, num_classifications)
         """
-        scores = weights.dot(points.T).T
-        return scores
+        return weights.dot(points.T).T

@@ -7,9 +7,9 @@ from utils.timing import time_function
 
 class TestLayerFullyConnected(unittest.TestCase):
     def setUp(self):
-        num_classes = 10
-        num_points = 500
-        point_size = 1000
+        num_classes = 100
+        num_points = 1000
+        point_size = 20000
         self.weights = np.random.randn(num_classes, point_size)
         self.points = np.random.randn(num_points, point_size)
 
@@ -17,7 +17,11 @@ class TestLayerFullyConnected(unittest.TestCase):
         layer = LayerFullyConnected(self.weights.shape, self.points.shape)
         time_naive = time_function(layer.forward_naive, self.weights, self.points)
         time_vectorized = time_function(layer.forward_vectorized, self.weights, self.points)
-        self.assertLess(time_vectorized * 2, time_naive)
+        print(time_naive)
+        print(time_vectorized)
+        # the vectorized implementation should become increasingly faster as
+        # the data size increases
+        self.assertLess(time_vectorized * 5, time_naive)
 
 
 class TestLayerFullyConnectedDirected(unittest.TestCase):
