@@ -17,7 +17,11 @@ class LinearSVM(LinearClassifier):
     """
     Normalizes the data you specify against the training data for the SVM
     algorithm. We typically do this when we compare the learned classifications
-    against our test or validation data.
+    against our test or validation data. Please use the returned numpy array.
+
+    Note: The data normalization in this method affects the original array
+    imperatively, however the numpy dimensions seem to be immutable. Thus,
+    please use the returned array so that you pick up the updated dimensions.
     """
     # subtract the mean from the training points
     points -= self.mean
@@ -25,6 +29,7 @@ class LinearSVM(LinearClassifier):
     # append the bias dimension of ones "so that our SVM only has to worry
     # about optimizing a single weight matrix W"
     points = np.hstack([points, np.ones((points.shape[0], 1))])
+    return points
 
   def train(self, points, labels):
     pass
@@ -78,7 +83,7 @@ class LinearSVM(LinearClassifier):
     # Compute the gradient of the loss function and store it dW.                #
     # Rather that first computing the loss and then computing the derivative,   #
     # it may be simpler to compute the derivative at the same time that the     #
-    # loss is being computed. As a result you may need to modify some of the    #
+    # loss is being computedd. As a result you may need to modify some of the    #
     # code above to compute the gradient.                                       #
     #############################################################################
 
@@ -118,3 +123,25 @@ class LinearSVM(LinearClassifier):
     #############################################################################
 
     return loss, dW
+
+  def numerical_gradient_estimate(self, W, points, labels):
+    # Once you've implemented the gradient, recompute it with the code below
+    # and gradient check it with the function we provided for you
+
+    # Compute the loss and its gradient at W.
+    loss, grad = self.svm_loss_naive(W, points, labels, 0.0)
+
+    # Numerically compute the gradient along several randomly chosen dimensions, and
+    # compare them with your analytically computed gradient. The numbers should match
+    # almost exactly along all dimensions.
+    from lib.gradient_check import grad_check_sparse
+    f = lambda w: self.svm_loss_naive(w, points, labels, 0.0)[0]
+    grad_numerical = grad_check_sparse(f, W, grad)
+
+    # do the gradient check once again with regularization turned on
+    # you didn't forget the regularization gradient did you?
+    loss, grad = self.svm_loss_naive(W, points, labels, 1e2)
+    f = lambda w: self.svm_loss_naive(w, points, labels, 1e2)[0]
+    grad_numerical = grad_check_sparse(f, W, grad)
+
+    print("hello world")

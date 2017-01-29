@@ -38,26 +38,13 @@ class TestLinearSVM(unittest.TestCase):
     self.classifier = LinearSVM()
 
     self.classifier.setup(self.train_points)
-    self.classifier.normalize(self.train_points)
+    self.train_points = self.classifier.normalize(self.train_points)
     self.classifier.normalize(self.validation_points)
     self.classifier.normalize(self.test_points)
 
-
-    # X_train = np.hstack([X_train, np.ones((X_train.shape[0], 1))])
-    # X_val = np.hstack([X_val, np.ones((X_val.shape[0], 1))])
-    # X_test = np.hstack([X_test, np.ones((X_test.shape[0], 1))])
-    # X_dev = np.hstack([X_dev, np.ones((X_dev.shape[0], 1))])
-
-    # data = partitioner.partition(data, 6, 0)
-
-    # self.train_points = sampler.sample(data['train']['points'], self.num_train)
-    # self.train_labels = sampler.sample(data['train']['labels'], self.num_train)
-    # self.test_points = sampler.sample(data['test']['points'], self.num_test)
-    # self.test_labels = sampler.sample(data['test']['labels'], self.num_test)
-
-
-    # self.classifier = KNearestNeighbor()
-    # self.classifier.train(self.train_points, self.train_labels)
-
-  def testSomething(self):
-    pass
+  def testSVMLossNaive(self):
+    W = np.random.randn(3073, 10) * 0.0001
+    regularization_strength = 0.00001
+    loss, grad = self.classifier.svm_loss_naive(
+        W, self.train_points, self.train_labels, regularization_strength)
+    print('loss %f' % (loss,))
