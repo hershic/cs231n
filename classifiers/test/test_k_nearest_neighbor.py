@@ -22,18 +22,19 @@ class TestKNearestNeighbor(unittest.TestCase):
     data = importer.import_all()
     data = partitioner.partition(data, 6, 0)
 
-    self.train_points = sampler.sample(data['train']['points'], self.num_train)
-    self.train_labels = sampler.sample(data['train']['labels'], self.num_train)
-    self.test_points = sampler.sample(data['test']['points'], self.num_test)
-    self.test_labels = sampler.sample(data['test']['labels'], self.num_test)
+    train_dataset = sampler.sample(data['train'], self.num_train)
+    test_dataset = sampler.sample(data['test'], self.num_test)
 
-    self.train_points = np.reshape(self.train_points, (self.train_points.shape[0], -1))
-    self.test_points = np.reshape(self.test_points, (self.test_points.shape[0], -1))
+    self.train_labels = train_dataset['labels']
+    self.test_labels = test_dataset['labels']
+
+    self.train_points = np.reshape(train_dataset['points'], (train_dataset['points'].shape[0], -1))
+    self.test_points = np.reshape(test_dataset['points'], (test_dataset['points'].shape[0], -1))
 
     self.classifier = KNearestNeighbor()
     self.classifier.train(self.train_points, self.train_labels)
 
-  def xtest_dist_two_loops(self):
+  def test_dist_two_loops(self):
     dists_two = self.classifier._compute_distances_two_loops(self.test_points)
 
     # Now implement the function predict_labels and run the code below: We use
@@ -50,7 +51,7 @@ class TestKNearestNeighbor(unittest.TestCase):
     self.assertLess(accuracy, 0.3)
     self.assertGreater(accuracy, 0.1)
 
-  def xtest_dist_one_loop(self):
+  def test_dist_one_loop(self):
     # Now lets speed up distance matrix computation by using partial
     # vectorization with one loop. Implement the function
     # compute_distances_one_loop and run the code below:
@@ -67,7 +68,7 @@ class TestKNearestNeighbor(unittest.TestCase):
     difference = np.linalg.norm(dists_two - dists_one, ord='fro')
     self.assertAlmostEqual(difference, 0.0)
 
-  def xtest_dist_no_loops(self):
+  def test_dist_no_loops(self):
     # Now implement the fully vectorized version inside
     # compute_distances_no_loops and run the code
     dists_one = self.classifier._compute_distances_one_loop(self.test_points)
@@ -90,7 +91,7 @@ class TestKNearestNeighbor(unittest.TestCase):
     return toc - tic
 
   # Ensure the algorithms are sane
-  def xtest_timing(self):
+  def test_timing(self):
     two_loop_time = self.time_function(self.classifier._compute_distances_two_loops, self.test_points)
     one_loop_time = self.time_function(self.classifier._compute_distances_one_loop, self.test_points)
     no_loop_time = self.time_function(self.classifier._compute_distances_no_loops, self.test_points)
