@@ -35,7 +35,6 @@ class LayerFullyConnected:
             scores[i] = weights.dot(points[i])
         return scores
 
-
     def forward_vectorized(self, weights, points):
         """
         Computes the forward pass of a fully connected layer with the input
@@ -48,7 +47,5 @@ class LayerFullyConnected:
         Outputs:
         - scores: (num_points, num_classifications)
         """
-        num_classifications = weights.shape[0]
-        num_points = points.shape[0]
         scores = weights.dot(points.T).T
         return scores
