@@ -6,14 +6,15 @@ from classifiers.linear_svm import LinearSVM
 from partitioners.partitioner_range_split import PartitionerRangeSplit
 from samplers.sampler_random import SamplerRandom
 from importers.importer_cifar10 import ImporterCIFAR10
+from util.time import time_function
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
 
 class TestLinearSVM(unittest.TestCase):
   def setUp(self):
-    self.num_train = 500
-    self.num_test = 50
+    self.num_train = 5000
+    self.num_test = 500
     self.num_validation = 50
 
     sampler = SamplerRandom()
@@ -42,7 +43,7 @@ class TestLinearSVM(unittest.TestCase):
     self.classifier.normalize(self.validation_points)
     self.classifier.normalize(self.test_points)
 
-  def testSVMLossNaive(self):
+  def xtestSVMLossNaive(self):
     W = np.random.randn(3073, 10) * 0.0001
     regularization_strength = 0.00001
     loss, grad = self.classifier.svm_loss_naive(
@@ -58,3 +59,18 @@ class TestLinearSVM(unittest.TestCase):
     print('loss %f' % (loss,))
     self.assertLess(loss, 10)
     self.assertGreater(loss, 8)
+
+  def testTiming(self):
+    W = np.random.randn(3073, 10) * 0.0001
+    regularization_strength = 0.00001
+
+    naive_time = \
+      time_function(self.classifier.svm_loss_naive, W, self.train_points,
+                         self.train_labels, regularization_strength)
+
+    vectorized_time = \
+      time_function(self.classifier.svm_loss_vectorized, W, self.train_points,
+                         self.train_labels, regularization_strength)
+
+    print(naive_time)
+    print(vectorized_time)
