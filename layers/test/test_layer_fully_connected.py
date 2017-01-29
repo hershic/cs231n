@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from layers.fully_connected import LayerFullyConnected
+from layers.layer_fully_connected import LayerFullyConnected
 from utils.timing import time_function
 
 
