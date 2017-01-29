@@ -46,7 +46,6 @@ class TestLayerFullyConnectedDirected(unittest.TestCase):
 
     def test_timing(self):
         layer = LayerFullyConnected(self.weights.shape, self.points.shape)
-        layer = LayerFullyConnected(self.weights.shape, self.points.shape)
 
         time_naive = time_function(layer.forward_naive, self.weights, self.points)
         time_vectorized = time_function(layer.forward_vectorized, self.weights, self.points)
