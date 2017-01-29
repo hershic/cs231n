@@ -2,146 +2,146 @@ import numpy as np
 
 
 class KNearestNeighbor(object):
-  """ a kNN classifier with L2 distance """
+    """ a kNN classifier with L2 distance """
 
-  def __init__(self):
-    pass
+    def __init__(self):
+        pass
 
-  def train(self, points, labels):
-    """
-    Train the classifier. For k-nearest neighbors this is just
-    memorizing the training data.
+    def train(self, points, labels):
+        """
+        Train the classifier. For k-nearest neighbors this is just
+        memorizing the training data.
 
-    Inputs:
-    - X: A numpy array of shape (num_train, D) containing the training data
-      consisting of num_train samples each of dimension D.
-    - y: A numpy array of shape (N,) containing the training labels, where
-         y[i] is the label for X[i].
-    """
-    self.train_points = points
-    self.train_labels = labels
+        Inputs:
+        - X: A numpy array of shape (num_train, D) containing the training data
+            consisting of num_train samples each of dimension D.
+        - y: A numpy array of shape (N,) containing the training labels, where
+                 y[i] is the label for X[i].
+        """
+        self.train_points = points
+        self.train_labels = labels
 
-  def predict(self, test_points, k=1, num_loops=0):
-    """
-    Predict labels for test data using this classifier.
+    def predict(self, test_points, k=1, num_loops=0):
+        """
+        Predict labels for test data using this classifier.
 
-    Inputs:
-    - X: A numpy array of shape (num_test, D) containing test data consisting
-         of num_test samples each of dimension D.
-    - k: The number of nearest neighbors that vote for the predicted labels.
-    - num_loops: Determines which implementation to use to compute distances
-      between training points and testing points.
+        Inputs:
+        - X: A numpy array of shape (num_test, D) containing test data consisting
+                 of num_test samples each of dimension D.
+        - k: The number of nearest neighbors that vote for the predicted labels.
+        - num_loops: Determines which implementation to use to compute distances
+            between training points and testing points.
 
-    Returns:
-    - y: A numpy array of shape (num_test,) containing predicted labels for the
-      test data, where y[i] is the predicted label for the test point X[i].
-    """
-    if num_loops == 0:
-      dists = self._compute_distances_no_loops(test_points)
-    elif num_loops == 1:
-      dists = self._compute_distances_one_loop(test_points)
-    elif num_loops == 2:
-      dists = self._compute_distances_two_loops(test_points)
-    else:
-      raise ValueError('Invalid value %d for num_loops' % num_loops)
+        Returns:
+        - y: A numpy array of shape (num_test,) containing predicted labels for the
+            test data, where y[i] is the predicted label for the test point X[i].
+        """
+        if num_loops == 0:
+            dists = self._compute_distances_no_loops(test_points)
+        elif num_loops == 1:
+            dists = self._compute_distances_one_loop(test_points)
+        elif num_loops == 2:
+            dists = self._compute_distances_two_loops(test_points)
+        else:
+            raise ValueError('Invalid value %d for num_loops' % num_loops)
 
-    return self._predict_labels(dists, k=k)
+        return self._predict_labels(dists, k=k)
 
-  def _compute_distances_two_loops(self, test_points):
-    """
-    Compute the distance between each test point in X and each training point
-    in self.X_train using a nested loop over both the training data and the
-    test data.
+    def _compute_distances_two_loops(self, test_points):
+        """
+        Compute the distance between each test point in X and each training point
+        in self.X_train using a nested loop over both the training data and the
+        test data.
 
-    Inputs:
-    - X: A numpy array of shape (num_test, D) containing test data.
+        Inputs:
+        - X: A numpy array of shape (num_test, D) containing test data.
 
-    Returns:
-    - dists: A numpy array of shape (num_test, num_train) where dists[i, j]
-      is the Euclidean distance between the ith test point and the jth training
-      point.
-    """
-    num_test = test_points.shape[0]
-    num_train = self.train_points.shape[0]
-    dists = np.zeros((num_test, num_train))
+        Returns:
+        - dists: A numpy array of shape (num_test, num_train) where dists[i, j]
+            is the Euclidean distance between the ith test point and the jth training
+            point.
+        """
+        num_test = test_points.shape[0]
+        num_train = self.train_points.shape[0]
+        dists = np.zeros((num_test, num_train))
 
-    for i in range(num_test):
-      for j in range(num_train):
-        # Compute the l2 distance between the ith test point and the jth
-        # training point, and store the result in dists[i, j]. You should
-        # not use a loop over dimension.
-        testPoint = test_points[i]
-        trainPoint = self.train_points[j]
-        dists[i][j] = np.sqrt(np.sum(np.square(testPoint - trainPoint)))
-    return dists
+        for i in range(num_test):
+            for j in range(num_train):
+                # Compute the l2 distance between the ith test point and the jth
+                # training point, and store the result in dists[i, j]. You should
+                # not use a loop over dimension.
+                testPoint = test_points[i]
+                trainPoint = self.train_points[j]
+                dists[i][j] = np.sqrt(np.sum(np.square(testPoint - trainPoint)))
+        return dists
 
-  def _compute_distances_one_loop(self, test_points):
-    """
-    Compute the distance between each test point in X and each training point
-    in self.X_train using a single loop over the test data.
+    def _compute_distances_one_loop(self, test_points):
+        """
+        Compute the distance between each test point in X and each training point
+        in self.X_train using a single loop over the test data.
 
-    Input / Output: Same as compute_distances_two_loops
-    """
-    num_test = test_points.shape[0]
-    num_train = self.train_points.shape[0]
-    dists = np.zeros((num_test, num_train))
-    for i in range(num_test):
-      dists[i] = np.sqrt(np.sum(np.square(test_points[i] - self.train_points[:]), axis=1))
-    return dists
+        Input / Output: Same as compute_distances_two_loops
+        """
+        num_test = test_points.shape[0]
+        num_train = self.train_points.shape[0]
+        dists = np.zeros((num_test, num_train))
+        for i in range(num_test):
+            dists[i] = np.sqrt(np.sum(np.square(test_points[i] - self.train_points[:]), axis=1))
+        return dists
 
-  def _compute_distances_no_loops(self, test_points):
-    """
-    Compute the distance between each test point in X and each training point
-    in self.X_train using no explicit loops.
+    def _compute_distances_no_loops(self, test_points):
+        """
+        Compute the distance between each test point in X and each training point
+        in self.X_train using no explicit loops.
 
-    Input / Output: Same as compute_distances_two_loops
-    """
-    num_test = test_points.shape[0]
-    num_train = self.train_points.shape[0]
-    dists = np.zeros((num_test, num_train))
+        Input / Output: Same as compute_distances_two_loops
+        """
+        num_test = test_points.shape[0]
+        num_train = self.train_points.shape[0]
+        dists = np.zeros((num_test, num_train))
 
-    # This computes the distances as $d_i = \sqrt{\sum_j (x_i - y_j)^2}$, or
-    # equivalently, $d_i = \sqrt{\sum_j x_i^2 + y_j^2 - 2 x \dot y}$ by
-    # leveraging the properties of NumPy broadcast summations. Specifically, it
-    # utilizes the fact that addition across (m, 1) and (1, n) tensors produces
-    # a (m, n) tensor. See
-    # https://docs.scipy.org/doc/numpy/user/basics.broadcasting.html for more
-    # information about broadcasting. After the broadcasted squares, we do a
-    # matrix inner product to get the $2 \times x \dot y$ terms. Then NumPy
-    # computes the $\sqrt$ per-element. This gets us our distances.
-    # Retrieved from StackOverflow:
-    # http://stackoverflow.com/questions/32856726/memory-efficient-l2-norm-using-python-broadcasting
-    x, y = test_points, self.train_points
-    x2 = np.sum(x**2, axis=1, keepdims=True)  # (m, 1)
-    y2 = np.sum(y**2, axis=1)                 # (1, n)
-    xy = np.dot(x, y.T)
-    dists = np.sqrt(x2 - 2*xy + y2)
+        # This computes the distances as $d_i = \sqrt{\sum_j (x_i - y_j)^2}$, or
+        # equivalently, $d_i = \sqrt{\sum_j x_i^2 + y_j^2 - 2 x \dot y}$ by
+        # leveraging the properties of NumPy broadcast summations. Specifically, it
+        # utilizes the fact that addition across (m, 1) and (1, n) tensors produces
+        # a (m, n) tensor. See
+        # https://docs.scipy.org/doc/numpy/user/basics.broadcasting.html for more
+        # information about broadcasting. After the broadcasted squares, we do a
+        # matrix inner product to get the $2 \times x \dot y$ terms. Then NumPy
+        # computes the $\sqrt$ per-element. This gets us our distances.
+        # Retrieved from StackOverflow:
+        # http://stackoverflow.com/questions/32856726/memory-efficient-l2-norm-using-python-broadcasting
+        x, y = test_points, self.train_points
+        x2 = np.sum(x**2, axis=1, keepdims=True)    # (m, 1)
+        y2 = np.sum(y**2, axis=1)                                 # (1, n)
+        xy = np.dot(x, y.T)
+        dists = np.sqrt(x2 - 2*xy + y2)
 
-    return dists
+        return dists
 
-  def _predict_labels(self, dists, k=1):
-    """
-    Given a matrix of distances between test points and training points,
-    predict a label for each test point.
+    def _predict_labels(self, dists, k=1):
+        """
+        Given a matrix of distances between test points and training points,
+        predict a label for each test point.
 
-    Inputs:
-    - dists: A numpy array of shape (num_test, num_train) where dists[i, j]
-      gives the distance betwen the ith test point and the jth training point.
+        Inputs:
+        - dists: A numpy array of shape (num_test, num_train) where dists[i, j]
+            gives the distance betwen the ith test point and the jth training point.
 
-    Returns:
-    - y: A numpy array of shape (num_test,) containing predicted labels for the
-      test data, where y[i] is the predicted label for the test point X[i].
-    """
-    num_test = dists.shape[0]
-    y_pred = np.zeros(num_test)
-    for i in range(num_test):
-      # A list of length k storing the labels of the k nearest neighbors to the
-      # ith test point.
-      closest_y = []
-      closest_sorted = np.argsort(dists[i])
-      for j in range(k):
-        closest_y.append(self.train_labels[closest_sorted[j]])
+        Returns:
+        - y: A numpy array of shape (num_test,) containing predicted labels for the
+            test data, where y[i] is the predicted label for the test point X[i].
+        """
+        num_test = dists.shape[0]
+        y_pred = np.zeros(num_test)
+        for i in range(num_test):
+            # A list of length k storing the labels of the k nearest neighbors to the
+            # ith test point.
+            closest_y = []
+            closest_sorted = np.argsort(dists[i])
+            for j in range(k):
+                closest_y.append(self.train_labels[closest_sorted[j]])
 
-      # find the most common label
-      y_pred[i] = np.argmax(np.bincount(closest_y))
-    return y_pred
+            # find the most common label
+            y_pred[i] = np.argmax(np.bincount(closest_y))
+        return y_pred
