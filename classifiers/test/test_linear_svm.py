@@ -47,4 +47,14 @@ class TestLinearSVM(unittest.TestCase):
     regularization_strength = 0.00001
     loss, grad = self.classifier.svm_loss_naive(
         W, self.train_points, self.train_labels, regularization_strength)
+    self.assertLess(loss, 10)
+    self.assertGreater(loss, 8)
+
+  def testSVMLossVectorized(self):
+    W = np.random.randn(3073, 10) * 0.0001
+    regularization_strength = 0.00001
+    loss, grad = self.classifier.svm_loss_vectorized(
+        W, self.train_points, self.train_labels, regularization_strength)
     print('loss %f' % (loss,))
+    self.assertLess(loss, 10)
+    self.assertGreater(loss, 8)

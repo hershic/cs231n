@@ -89,24 +89,19 @@ class LinearSVM(LinearClassifier):
 
     return loss, dW
 
-  def svm_loss_vectorized(self, W, X, y, reg):
+  def svm_loss_vectorized(self, weights, points, labels, reg):
     """
     Structured SVM loss function, vectorized implementation.
 
     Inputs and outputs are the same as svm_loss_naive.
     """
-    loss = 0.0
-    dW = np.zeros(W.shape)  # initialize the gradient as zero
 
-    #############################################################################
-    # TODO:                                                                     #
-    # Implement a vectorized version of the structured SVM loss, storing the    #
-    # result in loss.                                                           #
-    #############################################################################
-    pass
-    #############################################################################
-    #                             END OF YOUR CODE                              #
-    #############################################################################
+    dWeights = np.zeros(weights.shape)  # initialize the gradient as zero
+    num_train = points.shape[0]
+    loss = 0.0
+    for i in range(num_train):
+      loss += self.loss_vectorized(weights, points[i], labels[i])
+    loss /= num_train
 
     #############################################################################
     # TODO:                                                                     #
@@ -122,7 +117,13 @@ class LinearSVM(LinearClassifier):
     #                             END OF YOUR CODE                              #
     #############################################################################
 
-    return loss, dW
+    return loss, dWeights
+
+  def loss_vectorized(self, weights, points, labels):
+    scores = np.transpose(weights).dot(points)
+    margins = np.maximum(0, scores - scores[labels] + 1)
+    margins[labels] = 0
+    return np.sum(margins)
 
   def numerical_gradient_estimate(self, W, points, labels):
     # Once you've implemented the gradient, recompute it with the code below
