@@ -6,31 +6,6 @@ from classifiers.linear_classifier import LinearClassifier
 class LinearSVM(LinearClassifier):
   """ A subclass that uses the Multiclass SVM loss function """
 
-  def setup(self, points):
-    """
-    Sets up the SVM for training. Please call this before normalizing the rest
-    of you data.
-    """
-    self.mean = np.mean(points, axis=0)
-
-  def normalize(self, points):
-    """
-    Normalizes the data you specify against the training data for the SVM
-    algorithm. We typically do this when we compare the learned classifications
-    against our test or validation data. Please use the returned numpy array.
-
-    Note: The data normalization in this method affects the original array
-    imperatively, however the numpy dimensions seem to be immutable. Thus,
-    please use the returned array so that you pick up the updated dimensions.
-    """
-    # subtract the mean from the training points
-    points -= self.mean
-
-    # append the bias dimension of ones "so that our SVM only has to worry
-    # about optimizing a single weight matrix W"
-    points = np.hstack([points, np.ones((points.shape[0], 1))])
-    return points
-
   def train(self, points, labels):
     pass
 

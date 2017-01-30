@@ -36,13 +36,13 @@ class TestLinearSVM(unittest.TestCase):
         self.validation_points = np.reshape(validation_dataset['points'], (validation_dataset['points'].shape[0], -1))
         self.test_points = np.reshape(test_dataset['points'], (test_dataset['points'].shape[0], -1))
 
-        self.weights = np.random.randn(10, 3073) * 0.0001
-        self.classifier = LinearSVM()
+        # subtract the mean image
+        self.train_points -= np.mean(self.train_points, axis=0)
 
-        self.classifier.setup(self.train_points)
-        self.train_points = self.classifier.normalize(self.train_points)
-        self.classifier.normalize(self.validation_points)
-        self.classifier.normalize(self.test_points)
+        self.weights = np.random.randn(10, 3072) * 0.0001
+        self.classifier = LinearSVM()
+        self.layer = LayerFullyConnected(self.weights.shape, self.train_points.shape)
+
 
     def testSVMLossNaive(self):
         regularization_strength = 0.00001
