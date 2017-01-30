@@ -17,8 +17,6 @@ class TestLayerFullyConnected(unittest.TestCase):
         layer = LayerFullyConnected(self.weights.shape, self.points.shape)
         time_naive = time_function(layer.forward_naive, self.weights, self.points)
         time_vectorized = time_function(layer.forward_vectorized, self.weights, self.points)
-        print(time_naive)
-        print(time_vectorized)
         # the vectorized implementation should become increasingly faster as
         # the data size increases
         self.assertLess(time_vectorized * 5, time_naive)
