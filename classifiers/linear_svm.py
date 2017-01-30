@@ -12,7 +12,7 @@ class LinearSVM(LinearClassifier):
   def loss(self, X_batch, y_batch, reg):
     return self.svm_loss_vectorized(self.W, X_batch, y_batch, reg)
 
-  def svm_loss_naive(self, W, X, y, reg):
+  def svm_loss_naive(self, scores, labels, reg):
     """
     Structured SVM loss function, naive implementation (with loops).
 
@@ -30,28 +30,31 @@ class LinearSVM(LinearClassifier):
     - loss as single float
     - gradient with respect to weights W; an array of same shape as W
     """
-    dW = np.zeros(W.shape)  # initialize the gradient as zero
+    # TODO: it's unclear if the gradient calculation with the weight shape
+    # needs to be done here.
+    # dW = np.zeros(W.shape) # initialize the gradient as zero
+    dW = 0
 
     # compute the loss and the gradient
-    num_classes = W.shape[0]
-    num_train = X.shape[0]
+    num_classes = scores.shape[1]
+    num_points = scores.shape[0]
     loss = 0.0
-    for i in range(num_train):
-      scores = W.dot(X[i])
-      correct_class_score = scores[y[i]]
+    for i in range(num_points):
+      correct_class_score = scores[i][labels[i]]
       for j in range(num_classes):
-        if j == y[i]:
+        if j == labels[i]:
           continue
-        margin = scores[j] - correct_class_score + 1  # note delta = 1
+        margin = scores[i][j] - correct_class_score + 1  # note delta = 1
         if margin > 0:
           loss += margin
 
     # Right now the loss is a sum over all training examples, but we want it
     # to be an average instead so we divide by num_train.
-    loss /= num_train
+    loss /= num_points
 
     # Add regularization to the loss.
-    loss += 0.5 * reg * np.sum(W * W)
+    # TODO: understand what this is
+    # loss += 0.5 * reg * np.sum(W * W)
 
     #############################################################################
     # TODO:                                                                     #
