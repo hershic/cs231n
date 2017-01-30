@@ -26,14 +26,14 @@ class LayerFullyConnected:
         - weights: (num_classifications, point_size)
         - points: (num_points, point_size)
         Outputs:
-        - scores: (num_points, num_classifications)
+        - scores: (num_classifications, num_points)
         """
         num_classifications = weights.shape[0]
         num_points = points.shape[0]
         scores = np.zeros((num_points, num_classifications))
         for i in range(num_points):
             scores[i] = weights.dot(points[i])
-        return scores
+        return scores.T
 
     def forward_vectorized(self, weights, points):
         """
@@ -45,9 +45,7 @@ class LayerFullyConnected:
         - weights: (num_classifications, point_size)
         - points: (num_points, point_size)
         Outputs:
-        - scores: (num_points, num_classifications)
+        - scores: (num_classifications, num_points)
         """
-        # TODO figure out if I should not transpose this to make it easier to
-        # chain layers
         # TODO obtain and cache the gradient
-        return weights.dot(points.T).T
+        return weights.dot(points.T)

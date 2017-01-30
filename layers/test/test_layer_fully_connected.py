@@ -32,21 +32,19 @@ class TestLayerFullyConnectedDirected(unittest.TestCase):
                                 [1, 2, 3, 1],
                                 [2, 3, 2, 2],
                                 [2, 3, 1, 3]])
-        self.expected = np.array([[15, 21, 14],
-                                  [20, 32, 30],
-                                  [16, 19, 15],
-                                  [18, 26, 21],
-                                  [17, 27, 23]])
+        self.scores = np.array([[15, 20, 16, 18, 17],
+                                [21, 32, 19, 26, 27],
+                                [14, 30, 15, 21, 23]])
 
     def test_naive_directed(self):
         layer = LayerFullyConnected(self.weights.shape, self.points.shape)
         scores = layer.forward_naive(self.weights, self.points)
-        self.assertTrue(np.array_equal(scores, self.expected))
+        self.assertTrue(np.array_equal(scores, self.scores))
 
     def test_vectorized_directed(self):
         layer = LayerFullyConnected(self.weights.shape, self.points.shape)
         scores = layer.forward_vectorized(self.weights, self.points)
-        self.assertTrue(np.array_equal(scores, self.expected))
+        self.assertTrue(np.array_equal(scores, self.scores))
 
     def test_timing(self):
         layer = LayerFullyConnected(self.weights.shape, self.points.shape)
