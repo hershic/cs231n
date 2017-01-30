@@ -18,7 +18,7 @@ class LayerFullyConnected:
 
     def forward_naive(self, weights, points):
         """
-        Computes the forward pass of a fully connected layer with the input
+        Computes the forward pass of a fully-connected layer with the input
         weights in a naive-unvectorized implementation, returning the category
         scores for the input points.
 
@@ -37,7 +37,7 @@ class LayerFullyConnected:
 
     def forward_vectorized(self, weights, points):
         """
-        Computes the forward pass of a fully connected layer with the input
+        Computes the forward pass of a fully-connected layer with the input
         weights in a vectorized implementation, returning the category scores
         for the input points.
 
@@ -47,4 +47,7 @@ class LayerFullyConnected:
         Outputs:
         - scores: (num_points, num_classifications)
         """
+        # TODO figure out if I should not transpose this to make it easier to
+        # chain layers
+        # TODO obtain and cache the gradient
         return weights.dot(points.T).T
