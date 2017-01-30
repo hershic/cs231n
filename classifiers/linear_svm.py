@@ -36,15 +36,15 @@ class LinearSVM(LinearClassifier):
         dW = 0
 
         # compute the loss and the gradient
-        num_classes = scores.shape[1]
-        num_points = scores.shape[0]
+        num_classes = scores.shape[0]
+        num_points = scores.shape[1]
         loss = 0.0
         for i in range(num_points):
-            correct_class_score = scores[i][labels[i]]
+            correct_class_score = scores[labels[i]][i]
             for j in range(num_classes):
                 if j == labels[i]:
                     continue
-                margin = scores[i][j] - correct_class_score + 1    # note delta = 1
+                margin = scores[j][i] - correct_class_score + 1    # note delta = 1
                 if margin > 0:
                     loss += margin
 
@@ -67,7 +67,7 @@ class LinearSVM(LinearClassifier):
 
         return loss, dW
 
-    def svm_loss_vectorized(self, scores, labels, reg):
+    def svm_loss_vectorized(self, scores, labels, reg=1e-6):
         """
         Structured SVM loss function, vectorized implementation.
 
@@ -77,11 +77,15 @@ class LinearSVM(LinearClassifier):
         # TODO: it's unclear if the gradient calculation with the weight shape
         # needs to be done here.
         # dWeights = np.zeros(weights.shape)    # initialize the gradient as zero
-        num_points = scores.shape[0]
-        loss = 0.0
-        for i in range(num_train):
-            loss += self.loss_vectorized(weights, points[i], labels[i])
-        loss /= num_train
+        dWeights = 0
+
+        num_points = labels.shape[0]
+        correct_classification_indices = (labels, np.arange(num_points))
+        correct_classifications = scores[correct_classification_indices]
+        scores += 1 - correct_classifications
+        scores = np.maximum(scores, 0)
+        scores[correct_classification_indices] = 0
+        loss = np.sum(np.sum(scores, axis=0)) / num_points
 
         #############################################################################
         # TODO:                                                                     #

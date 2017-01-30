@@ -11,7 +11,6 @@ from utils.timing import time_function
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
-
 class TestLinearSVM(unittest.TestCase):
     def setUp(self):
         self.num_train = 5000
@@ -74,3 +73,37 @@ class TestLinearSVM(unittest.TestCase):
 
         print(naive_time)
         print(vectorized_time)
+
+
+class TestLinearSVMDirected0(unittest.TestCase):
+    def setUp(self):
+        self.weights = np.array([[1, 2, 3, 2],
+                                 [2, 4, 2, 3],
+                                 [3, 1, 2, 4]])
+        self.points = np.array([[1, 3, 2, 1],
+                                [3, 3, 1, 4],
+                                [1, 2, 3, 1],
+                                [2, 3, 2, 2],
+                                [2, 3, 1, 3]])
+        self.scores = np.array([[15, 20, 16, 18, 17],
+                                [21, 32, 19, 26, 27],
+                                [14, 30, 15, 21, 23]])
+        self.labels = np.array([2, 1, 0, 0, 2])
+
+    def testSVMLossVectorized(self):
+        classifier = LinearSVM()
+        (loss, gradient) = classifier.svm_loss_vectorized(self.scores, self.labels)
+        self.assertAlmostEqual(loss, 6.4)
+
+
+class TestLinearSVMDirected1(unittest.TestCase):
+    def setUp(self):
+        self.scores = np.array([[3.2, 1.3, 2.2],
+                                [5.1, 4.9, 2.5],
+                                [-1.7, 2.0, -3.1]])
+        self.labels = np.array([0, 1, 2])
+
+    def testSVMLossVectorized(self):
+        classifier = LinearSVM()
+        (loss, gradient) = classifier.svm_loss_vectorized(self.scores, self.labels)
+        self.assertAlmostEqual(loss, 5.2666666666666657)
