@@ -24,14 +24,17 @@ class TestLayerFullyConnected(unittest.TestCase):
 
 class TestLayerFullyConnectedDirected(unittest.TestCase):
     def setUp(self):
-        self.weights = np.array([[1, 2, 3, 2],
-                                 [2, 4, 2, 3],
-                                 [3, 1, 2, 4]])
+        # This is a test data set with 4 points per input and 3 output
+        # classifications. I have independently precalculated and verified the
+        # scores listed here.
         self.points = np.array([[1, 3, 2, 1],
                                 [3, 3, 1, 4],
                                 [1, 2, 3, 1],
                                 [2, 3, 2, 2],
                                 [2, 3, 1, 3]])
+        self.weights = np.array([[1, 2, 3, 2],
+                                 [2, 4, 2, 3],
+                                 [3, 1, 2, 4]])
         self.scores = np.array([[15, 20, 16, 18, 17],
                                 [21, 32, 19, 26, 27],
                                 [14, 30, 15, 21, 23]])
