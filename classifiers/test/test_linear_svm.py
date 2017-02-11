@@ -10,6 +10,7 @@ from utils.timing import time_function
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
+
 class TestLinearSVM(unittest.TestCase):
     def setUp(self):
         self.num_train = 5000
@@ -38,11 +39,10 @@ class TestLinearSVM(unittest.TestCase):
         # subtract the mean image
         self.train_points -= np.mean(self.train_points, axis=0)
 
-        self.weights = np.random.randn(10, 3072) * 0.0001
         self.classifier = LinearSVM()
-        self.layer = LayerFullyConnected(self.weights.shape, self.train_points.shape)
+        self.layer = LayerFullyConnected(self.train_points.shape[1], 10)
 
-        self.scores = self.layer.forward_vectorized(self.weights, self.train_points)
+        self.scores = self.layer.forward_vectorized(self.train_points)
 
     def testSVMLossNaive(self):
         regularization_strength = 0.00001

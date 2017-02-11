@@ -7,16 +7,16 @@ from utils.timing import time_function
 
 class TestLayerFullyConnected(unittest.TestCase):
     def setUp(self):
-        num_classes = 100
-        num_points = 1000
-        point_size = 20000
-        self.weights = np.random.randn(num_classes, point_size)
-        self.points = np.random.randn(num_points, point_size)
+        self.num_classes = 100
+        self.num_points = 1000
+        self.point_size = 20000
+        self.weights = np.random.randn(self.num_classes, self.point_size)
+        self.points = np.random.randn(self.num_points, self.point_size)
 
     def test_timing(self):
-        layer = LayerFullyConnected(self.weights.shape, self.points.shape)
-        time_naive = time_function(layer.forward_naive, self.weights, self.points)
-        time_vectorized = time_function(layer.forward_vectorized, self.weights, self.points)
+        layer = LayerFullyConnected(self.num_points, self.num_classes, self.weights)
+        time_naive = time_function(layer.forward_naive, self.points)
+        time_vectorized = time_function(layer.forward_vectorized, self.points)
         # the vectorized implementation should become increasingly faster as
         # the data size increases
         self.assertLess(time_vectorized * 5, time_naive)
@@ -35,19 +35,17 @@ class TestLayerFullyConnectedDirected(unittest.TestCase):
         self.scores = np.array([[15, 20, 16, 18, 17],
                                 [21, 32, 19, 26, 27],
                                 [14, 30, 15, 21, 23]])
+        self.layer = LayerFullyConnected(self.points.shape[1], self.scores.shape[1], self.weights)
 
     def test_naive_directed(self):
-        layer = LayerFullyConnected(self.weights.shape, self.points.shape)
-        scores = layer.forward_naive(self.weights, self.points)
+        scores = self.layer.forward_naive(self.points)
         self.assertTrue(np.array_equal(scores, self.scores))
 
     def test_vectorized_directed(self):
-        layer = LayerFullyConnected(self.weights.shape, self.points.shape)
-        scores = layer.forward_vectorized(self.weights, self.points)
+        scores = self.layer.forward_vectorized(self.points)
         self.assertTrue(np.array_equal(scores, self.scores))
 
     def test_timing(self):
-        layer = LayerFullyConnected(self.weights.shape, self.points.shape)
-        time_naive = time_function(layer.forward_naive, self.weights, self.points)
-        time_vectorized = time_function(layer.forward_vectorized, self.weights, self.points)
+        time_naive = time_function(self.layer.forward_naive, self.points)
+        time_vectorized = time_function(self.layer.forward_vectorized, self.points)
         self.assertLess(time_vectorized * 2, time_naive)
