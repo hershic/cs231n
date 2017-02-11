@@ -6,7 +6,6 @@ from importers.importer_cifar10 import ImporterCIFAR10
 from layers.layer_fully_connected import LayerFullyConnected
 from partitioners.partitioner_range_split import PartitionerRangeSplit
 from samplers.sampler_random import SamplerRandom
-from utils.data import load_CIFAR10
 from utils.timing import time_function
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
