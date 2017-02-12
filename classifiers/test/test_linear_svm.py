@@ -52,27 +52,24 @@ class TestLinearSVM(unittest.TestCase):
         self.scores = self.layer.forward_vectorized(self.train_points)
 
     def testSVMLossNaive(self):
-        regularization_strength = 0.00001
         loss, grad = self.classifier.svm_loss_naive(
-            self.scores, self.train_labels, regularization_strength)
+            self.scores, self.train_labels)
         self.assertLess(loss, 10)
         self.assertGreater(loss, 8)
 
     def testSVMLossVectorized(self):
-        regularization_strength = 0.00001
         loss, grad = self.classifier.svm_loss_vectorized(
-            self.scores, self.train_labels, regularization_strength)
+            self.scores, self.train_labels)
         self.assertLess(loss, 10)
         self.assertGreater(loss, 8)
 
     def testTiming(self):
-        regularization_strength = 0.00001
         naive_time = time_function(
-            self.classifier.svm_loss_naive, self.scores,
-            self.train_labels, regularization_strength)
+            self.classifier.svm_loss_naive,
+            self.scores, self.train_labels)
         vectorized_time = time_function(
-            self.classifier.svm_loss_vectorized, self.scores,
-            self.train_labels, regularization_strength)
+            self.classifier.svm_loss_vectorized,
+            self.scores, self.train_labels)
         self.assertLess(vectorized_time * 50, naive_time)
 
 

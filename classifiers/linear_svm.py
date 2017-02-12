@@ -9,7 +9,7 @@ class LinearSVM(LinearClassifier):
     def __init__(self, scores_shape):
         self.gradient = np.zeros(scores_shape)
 
-    def svm_loss_naive(self, scores, labels, reg):
+    def svm_loss_naive(self, scores, labels):
         """
         Structured SVM loss function, naive implementation (with loops).
 
@@ -21,7 +21,6 @@ class LinearSVM(LinearClassifier):
         - X: A numpy array of shape (N, D) containing a minibatch of data.
         - y: A numpy array of shape (N,) containing training labels; y[i] = c means
             that X[i] has label c, where 0 <= c < C.
-        - reg: (float) regularization strength
 
         Returns a tuple of:
         - loss as single float
@@ -49,10 +48,6 @@ class LinearSVM(LinearClassifier):
         # to be an average instead so we divide by num_train.
         loss /= num_points
 
-        # Add regularization to the loss.
-        # TODO: understand what this is
-        # loss += 0.5 * reg * np.sum(W * W)
-
         #############################################################################
         # TODO:                                                                     #
         # Compute the gradient of the loss function and store it dW.                #
@@ -64,7 +59,7 @@ class LinearSVM(LinearClassifier):
 
         return loss, dW
 
-    def svm_loss_vectorized(self, scores, labels, reg=1e-6):
+    def svm_loss_vectorized(self, scores, labels):
         """
         Structured SVM loss function, vectorized implementation.
 
@@ -72,7 +67,6 @@ class LinearSVM(LinearClassifier):
         - scores: A numpy array of shape (N, D) containing the scores of a batch of data.
         - labels: A numpy array of shape (N,) containing training labels; labels[i] = c
             means that scores[i] has label c, where 0 <= c < number of labels in scores.
-        - reg: (float) Regularization strength. Defaults to 1e-6.
 
         Returns a tuple of:
         - loss as single float
@@ -87,8 +81,6 @@ class LinearSVM(LinearClassifier):
         local_scores = np.maximum(local_scores, 0)
         local_scores[correct_classification_indices] = 0
         loss = np.sum(np.sum(local_scores, axis=0)) / num_points
-
-        # TODO: understand regularization
 
         self.gradient[local_scores < 0] = 0
         self.gradient[local_scores > 0] = 1
