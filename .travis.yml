@@ -4,8 +4,9 @@ python:
   - "3.5"
 
 install:
+  - apt-get -yqq install time
   - pip install -r requirements.txt
   - ./datasets/get_datasets.sh
 
 script:
-  - /usr/bin/time --verbose nosetests
+  - /usr/bin/env time --verbose nosetests
