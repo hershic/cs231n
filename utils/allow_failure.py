@@ -7,6 +7,6 @@ def allow_failure(test):
         try:
             test(*args, **kwargs)
         except Exception as e:
-            print(str(e))
+            print('\n' + str(e))
             raise nose.SkipTest
     return inner
