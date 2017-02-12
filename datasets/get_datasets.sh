@@ -11,6 +11,12 @@ cd $(readlink -f $(dirname $0))
 
 # Download cifar10
 init() {
+
+    if [[ -d "./cifar-10-batches-py" ]]; then
+        echo "Aborting: dataset already imported."
+        exit
+    fi
+
     trap teardown EXIT
     wget http://www.cs.toronto.edu/~kriz/${cifar10}
 }
