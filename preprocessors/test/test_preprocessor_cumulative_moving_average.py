@@ -42,10 +42,10 @@ class TestCumulativeMovingAverageOnCIFAR10(unittest.TestCase):
         data = importer.import_all()
         data = partitioner.partition(data, .1)
 
-        train_dataset = sampler.sample(data['train'], self.num_train)
+        train_dataset = sampler.sample(data.train, self.num_train)
 
-        self.train_points = np.reshape(train_dataset['points'],
-                                       (train_dataset['points'].shape[0], -1))
+        self.train_points = np.reshape(train_dataset.points,
+                                       (train_dataset.points.shape[0], -1))
 
     def test_mean(self):
         np_mean = np.mean(self.train_points, axis=0).reshape(-1, 1)

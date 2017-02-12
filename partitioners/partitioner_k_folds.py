@@ -1,5 +1,7 @@
 import numpy as np
 
+from datasets.dataset_train import DatasetTrain
+
 
 class PartitionerKFolds:
 
@@ -8,16 +10,9 @@ class PartitionerKFolds:
     pass
 
   def partition(self, data, num_folds, roll_amount):
-    points_split = np.array_split(data['points'], num_folds)
-    labels_split = np.array_split(data['labels'], num_folds)
+    points_split = np.array_split(data.points, num_folds)
+    labels_split = np.array_split(data.labels, num_folds)
 
-    return {
-      'train': {
-        'points': points_split[0],
-        'labels': labels_split[0]
-      },
-      'test': {
-        'points': np.concatenate(points_split[1:]),
-        'labels': np.concatenate(labels_split[1:])
-      }
-    }
+    return DatasetTrain(points_split[0], labels_split[0],
+                        np.concatenate(points_split[1:]),
+                        np.concatenate(labels_split[1:]))

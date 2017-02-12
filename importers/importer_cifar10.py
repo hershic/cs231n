@@ -1,3 +1,4 @@
+from datasets.dataset_simple import DatasetSimple
 from importers.importer_base import ImporterBase
 import six.moves.cPickle as pickle
 import numpy as np
@@ -9,15 +10,14 @@ class ImporterCIFAR10(ImporterBase):
     self.dir = dir
 
   def import_all(self):
+    # FIXME: move to saner
+    # points, labels = zip(*self.import_batch())
     points = []
     labels = []
     for batch in self.import_batch():
       points.append(batch[0])
       labels.append(batch[1])
-    return {
-      'points': np.concatenate(points),
-      'labels': np.concatenate(labels)
-    }
+    return DatasetSimple(np.concatenate(points), np.concatenate(labels))
 
   def import_batch(self):
     for batch in range(1, 6):

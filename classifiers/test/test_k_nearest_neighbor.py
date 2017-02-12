@@ -26,14 +26,14 @@ class TestKNearestNeighbor(unittest.TestCase):
         data = importer.import_all()
         data = partitioner.partition(data, 6, 0)
 
-        train_dataset = sampler.sample(data['train'], self.num_train)
-        test_dataset = sampler.sample(data['test'], self.num_test)
+        train_dataset = sampler.sample(data.train, self.num_train)
+        test_dataset = sampler.sample(data.test, self.num_test)
 
-        self.train_labels = train_dataset['labels']
-        self.test_labels = test_dataset['labels']
+        self.train_labels = train_dataset.labels
+        self.test_labels = test_dataset.labels
 
-        self.train_points = np.reshape(train_dataset['points'], (train_dataset['points'].shape[0], -1))
-        self.test_points = np.reshape(test_dataset['points'], (test_dataset['points'].shape[0], -1))
+        self.train_points = np.reshape(train_dataset.points, (train_dataset.points.shape[0], -1))
+        self.test_points = np.reshape(test_dataset.points, (test_dataset.points.shape[0], -1))
 
         self.classifier = KNearestNeighbor()
         self.classifier.train(self.train_points, self.train_labels)

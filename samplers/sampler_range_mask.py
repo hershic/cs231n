@@ -1,5 +1,7 @@
 from samplers.sampler_base import SamplerBase
 
+from datasets.dataset_simple import DatasetSimple
+
 
 class SamplerRangeMask(SamplerBase):
 
@@ -11,7 +13,5 @@ class SamplerRangeMask(SamplerBase):
     pass
 
   def sample(self, dataset, num, start=0):
-    return {
-      'points': dataset['points'][start:start + num],
-      'labels': dataset['labels'][start:start + num]
-    }
+    return DatasetSimple(dataset.points[start:start + num],
+                         dataset.points[start:start + num])
