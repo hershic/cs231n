@@ -16,6 +16,7 @@ class TestLinearSVM(unittest.TestCase):
         self.num_train = 5000
         self.num_test = 500
         self.num_validation = 50
+        self.num_classifications = 10
 
         sampler = SamplerRandom()
         partitioner = PartitionerRangeSplit()
@@ -32,22 +33,28 @@ class TestLinearSVM(unittest.TestCase):
         self.validation_labels = validation_dataset['labels']
         self.test_labels = test_dataset['labels']
 
-        self.train_points = np.reshape(train_dataset['points'], (train_dataset['points'].shape[0], -1))
-        self.validation_points = np.reshape(validation_dataset['points'], (validation_dataset['points'].shape[0], -1))
-        self.test_points = np.reshape(test_dataset['points'], (test_dataset['points'].shape[0], -1))
+        self.train_points = np.reshape(
+            train_dataset['points'], (train_dataset['points'].shape[0], -1))
+        self.validation_points = np.reshape(
+            validation_dataset['points'],
+            (validation_dataset['points'].shape[0], -1))
+        self.test_points = np.reshape(
+            test_dataset['points'], (test_dataset['points'].shape[0], -1))
 
         # subtract the mean image
         self.train_points -= np.mean(self.train_points, axis=0)
 
-        self.classifier = LinearSVM()
-        self.layer = LayerFullyConnected(self.train_points.shape[1], 10)
+        self.layer = LayerFullyConnected(
+            self.train_points.shape[1], self.num_classifications)
+        self.classifier = LinearSVM(
+            (self.num_classifications, self.train_points.shape[0]))
 
         self.scores = self.layer.forward_vectorized(self.train_points)
 
     def testSVMLossNaive(self):
         regularization_strength = 0.00001
-        loss, grad = \
-            self.classifier.svm_loss_naive(self.scores, self.train_labels, regularization_strength)
+        loss, grad = self.classifier.svm_loss_naive(
+            self.scores, self.train_labels, regularization_strength)
         self.assertLess(loss, 10)
         self.assertGreater(loss, 8)
 
@@ -60,10 +67,12 @@ class TestLinearSVM(unittest.TestCase):
 
     def testTiming(self):
         regularization_strength = 0.00001
-        naive_time = time_function(self.classifier.svm_loss_naive, self.scores,
-                                   self.train_labels, regularization_strength)
-        vectorized_time = time_function(self.classifier.svm_loss_vectorized, self.scores,
-                                        self.train_labels, regularization_strength)
+        naive_time = time_function(
+            self.classifier.svm_loss_naive, self.scores,
+            self.train_labels, regularization_strength)
+        vectorized_time = time_function(
+            self.classifier.svm_loss_vectorized, self.scores,
+            self.train_labels, regularization_strength)
         self.assertLess(vectorized_time * 50, naive_time)
 
 
@@ -81,10 +90,11 @@ class TestLinearSVMDirected0(unittest.TestCase):
                                 [21, 32, 19, 26, 27],
                                 [14, 30, 15, 21, 23]])
         self.labels = np.array([2, 1, 0, 0, 2])
+        self.classifier = LinearSVM(self.scores.shape)
 
     def testSVMLossVectorized(self):
-        classifier = LinearSVM()
-        (loss, gradient) = classifier.svm_loss_vectorized(self.scores, self.labels)
+        (loss, gradient) = self.classifier.svm_loss_vectorized(
+            self.scores, self.labels)
         self.assertAlmostEqual(loss, 6.4)
 
 
@@ -94,8 +104,9 @@ class TestLinearSVMDirected1(unittest.TestCase):
                                 [5.1, 4.9, 2.5],
                                 [-1.7, 2.0, -3.1]])
         self.labels = np.array([0, 1, 2])
+        self.classifier = LinearSVM(self.scores.shape)
 
     def testSVMLossVectorized(self):
-        classifier = LinearSVM()
-        (loss, gradient) = classifier.svm_loss_vectorized(self.scores, self.labels)
+        (loss, gradient) = self.classifier.svm_loss_vectorized(
+            self.scores, self.labels)
         self.assertAlmostEqual(loss, 5.2666666666666657)

@@ -6,11 +6,8 @@ from classifiers.linear_classifier import LinearClassifier
 class LinearSVM(LinearClassifier):
     """ A subclass that uses the Multiclass SVM loss function """
 
-    def train(self, points, labels):
-        pass
-
-    def loss(self, X_batch, y_batch, reg):
-        return self.svm_loss_vectorized(self.W, X_batch, y_batch, reg)
+    def __init__(self, scores_shape):
+        self.gradient = np.zeros(scores_shape)
 
     def svm_loss_naive(self, scores, labels, reg):
         """
@@ -71,62 +68,31 @@ class LinearSVM(LinearClassifier):
         """
         Structured SVM loss function, vectorized implementation.
 
-        Inputs and outputs are the same as svm_loss_naive.
+        Inputs:
+        - scores: A numpy array of shape (N, D) containing the scores of a batch of data.
+        - labels: A numpy array of shape (N,) containing training labels; labels[i] = c
+            means that scores[i] has label c, where 0 <= c < number of labels in scores.
+        - reg: (float) Regularization strength. Defaults to 1e-6.
+
+        Returns a tuple of:
+        - loss as single float
+        - gradient with respect to weights W; an array of same shape as W
         """
 
-        # TODO: it's unclear if the gradient calculation with the weight shape
-        # needs to be done here.
-        # dWeights = np.zeros(weights.shape)    # initialize the gradient as zero
-        dWeights = 0
-
+        local_scores = scores
         num_points = labels.shape[0]
         correct_classification_indices = (labels, np.arange(num_points))
         correct_classifications = scores[correct_classification_indices]
-        scores += 1 - correct_classifications
-        scores = np.maximum(scores, 0)
-        scores[correct_classification_indices] = 0
-        loss = np.sum(np.sum(scores, axis=0)) / num_points
+        local_scores = scores + 1 - correct_classifications
+        local_scores = np.maximum(local_scores, 0)
+        local_scores[correct_classification_indices] = 0
+        loss = np.sum(np.sum(local_scores, axis=0)) / num_points
 
-        #############################################################################
-        # TODO:                                                                     #
-        # Implement a vectorized version of the gradient for the structured SVM     #
-        # loss, storing the result in dW.                                           #
-        #                                                                           #
-        # Hint: Instead of computing the gradient from scratch, it may be easier    #
-        # to reuse some of the intermediate values that you used to compute the     #
-        # loss.                                                                     #
-        #############################################################################
-        pass
-        #############################################################################
-        #                             END OF YOUR CODE                              #
-        #############################################################################
+        # TODO: understand regularization
 
-        return loss, dWeights
+        self.gradient[local_scores < 0] = 0
+        self.gradient[local_scores > 0] = 1
+        self.gradient[correct_classification_indices] = \
+            -1 * np.sum(self.gradient, axis=0)
 
-    def loss_vectorized(self, weights, points, labels):
-        scores = np.transpose(weights).dot(points)
-        margins = np.maximum(0, scores - scores[labels] + 1)
-        margins[labels] = 0
-        return np.sum(margins)
-
-    def numerical_gradient_estimate(self, W, points, labels):
-        # Once you've implemented the gradient, recompute it with the code below
-        # and gradient check it with the function we provided for you
-
-        # Compute the loss and its gradient at W.
-        loss, grad = self.svm_loss_naive(W, points, labels, 0.0)
-
-        # Numerically compute the gradient along several randomly chosen dimensions, and
-        # compare them with your analytically computed gradient. The numbers should match
-        # almost exactly along all dimensions.
-        from lib.gradient_check import grad_check_sparse
-        f = lambda w: self.svm_loss_naive(w, points, labels, 0.0)[0]
-        grad_numerical = grad_check_sparse(f, W, grad)
-
-        # do the gradient check once again with regularization turned on
-        # you didn't forget the regularization gradient did you?
-        loss, grad = self.svm_loss_naive(W, points, labels, 1e2)
-        f = lambda w: self.svm_loss_naive(w, points, labels, 1e2)[0]
-        grad_numerical = grad_check_sparse(f, W, grad)
-
-        print("hello world")
+        return loss, self.gradient
