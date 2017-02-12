@@ -9,6 +9,8 @@ from partitioners.partitioner_k_folds import PartitionerKFolds
 from samplers.sampler_range_mask import SamplerRangeMask
 from importers.importer_cifar10 import ImporterCIFAR10
 
+from utils.allow_failure import allow_failure
+
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
 
@@ -81,6 +83,7 @@ class TestKNearestNeighbor(unittest.TestCase):
         self.assertAlmostEqual(difference, 0.0)
 
     # Ensure the algorithms are sane
+    @allow_failure
     def test_timing(self):
         two_loop_time = time_function(self.classifier._compute_distances_two_loops, self.test_points)
         one_loop_time = time_function(self.classifier._compute_distances_one_loop, self.test_points)

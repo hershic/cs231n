@@ -8,6 +8,8 @@ from partitioners.partitioner_range_split import PartitionerRangeSplit
 from samplers.sampler_random import SamplerRandom
 from utils.timing import time_function
 
+from utils.allow_failure import allow_failure
+
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
 
@@ -63,6 +65,7 @@ class TestLinearSVM(unittest.TestCase):
         self.assertLess(loss, 10)
         self.assertGreater(loss, 8)
 
+    @allow_failure
     def testTiming(self):
         naive_time = time_function(
             self.classifier.svm_loss_naive,
