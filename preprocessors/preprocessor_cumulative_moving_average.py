@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class NormalizerCumulativeMovingAverage:
+class PreprocessorCumulativeMovingAverage:
     def __init__(self, shape):
         self.mean = np.zeros(shape)
         self.batch_counter = 0
