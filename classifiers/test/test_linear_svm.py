@@ -110,3 +110,34 @@ class TestLinearSVMDirected1(unittest.TestCase):
         (loss, gradient) = self.classifier.svm_loss_vectorized(
             self.scores, self.labels)
         self.assertAlmostEqual(loss, 5.2666666666666657)
+
+
+class TestLinearSVMGradient(unittest.TestCase):
+    def setUp(self):
+        self.points = np.array([[1, 3, 2, 1]], dtype=float)
+        self.scores = np.array([[15], [21], [14]], dtype=float)
+        self.labels = np.array([2])
+        self.classifier = LinearSVM(self.scores.shape)
+
+    def testSVMGradient(self):
+        (loss, gradient) = self.classifier.svm_loss_vectorized(
+            self.scores, self.labels)
+
+    def testGradient(self):
+        (lossOriginal, analyticGradient) = self.classifier.svm_loss_vectorized(
+            self.scores, self.labels)
+        # preserve the gradient
+        analyticGradient = np.array(analyticGradient, copy=True)
+        h = 1e-6
+
+        numericalGradient = np.zeros(analyticGradient.shape)
+        for row in range(self.scores.shape[0]):
+            for col in range(self.scores.shape[1]):
+                self.scores[row, col] += h
+                (loss, _) = self.classifier.svm_loss_vectorized(
+                    self.scores, self.labels)
+                grad = (loss - lossOriginal) / h
+                numericalGradient[row, col] = grad
+                self.scores[row, col] -= h
+
+        self.assertTrue(np.all(np.isclose(numericalGradient, analyticGradient)))
