@@ -3,6 +3,7 @@ import numpy as np
 
 from layers.layer_fully_connected import LayerFullyConnected
 from utils.timing import time_function
+from classifiers.linear_svm import LinearSVM
 
 
 class TestLayerFullyConnected(unittest.TestCase):
@@ -38,7 +39,10 @@ class TestLayerFullyConnectedDirected(unittest.TestCase):
         self.scores = np.array([[15, 20, 16, 18, 17],
                                 [21, 32, 19, 26, 27],
                                 [14, 30, 15, 21, 23]])
-        self.layer = LayerFullyConnected(self.points.shape[1], self.scores.shape[1], self.weights)
+        self.labels = np.array([2, 1, 0, 0, 2])
+        self.layer = LayerFullyConnected(
+            self.points.shape[1], self.scores.shape[1], self.weights)
+        self.classifier = LinearSVM(self.scores.shape)
 
     def test_naive_directed(self):
         scores = self.layer.forward_naive(self.points)

@@ -19,10 +19,7 @@ class LayerFullyConnected:
         else:
             self.weights = np.random.randn(num_outputs, num_inputs) * 1e-4
 
-        if (not gradientInit):
-            self.gradient = np.random.randn(num_outputs, num_inputs) * 1e-4
-        else:
-            self.gradient = gradientInit
+        self.gradient = np.zeros((num_outputs, num_inputs))
 
     def forward_naive(self, input_points):
         """
@@ -54,4 +51,5 @@ class LayerFullyConnected:
         - scores: (num_classifications, num_points)
         """
         # TODO obtain and cache the gradient
+        self.gradient = self.weights
         return self.weights.dot(input_points.T)
