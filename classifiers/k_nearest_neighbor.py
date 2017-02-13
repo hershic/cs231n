@@ -21,7 +21,7 @@ class KNearestNeighbor(object):
         self.train_points = points
         self.train_labels = labels
 
-    def predict(self, test_points, k=1, num_loops=0):
+    def predict(self, batch_test_points, k=1, num_loops=0):
         """
         Predict labels for test data using this classifier.
 
@@ -37,17 +37,17 @@ class KNearestNeighbor(object):
             test data, where y[i] is the predicted label for the test point X[i].
         """
         if num_loops == 0:
-            dists = self._compute_distances_no_loops(test_points)
+            dists = self._compute_distances_no_loops(batch_test_points)
         elif num_loops == 1:
-            dists = self._compute_distances_one_loop(test_points)
+            dists = self._compute_distances_one_loop(batch_test_points)
         elif num_loops == 2:
-            dists = self._compute_distances_two_loops(test_points)
+            dists = self._compute_distances_two_loops(batch_test_points)
         else:
             raise ValueError('Invalid value %d for num_loops' % num_loops)
 
         return self._predict_labels(dists, k=k)
 
-    def _compute_distances_two_loops(self, test_points):
+    def _compute_distances_two_loops(self, batch_test_points):
         """
         Compute the distance between each test point in X and each training point
         in self.X_train using a nested loop over both the training data and the
@@ -61,7 +61,7 @@ class KNearestNeighbor(object):
             is the Euclidean distance between the ith test point and the jth training
             point.
         """
-        num_test = test_points.shape[0]
+        num_test = batch_test_points.shape[0]
         num_train = self.train_points.shape[0]
         dists = np.zeros((num_test, num_train))
 
@@ -70,33 +70,33 @@ class KNearestNeighbor(object):
                 # Compute the l2 distance between the ith test point and the jth
                 # training point, and store the result in dists[i, j]. You should
                 # not use a loop over dimension.
-                testPoint = test_points[i]
+                testPoint = batch_test_points[i]
                 trainPoint = self.train_points[j]
                 dists[i][j] = np.sqrt(np.sum(np.square(testPoint - trainPoint)))
         return dists
 
-    def _compute_distances_one_loop(self, test_points):
+    def _compute_distances_one_loop(self, batch_test_points):
         """
         Compute the distance between each test point in X and each training point
         in self.X_train using a single loop over the test data.
 
         Input / Output: Same as compute_distances_two_loops
         """
-        num_test = test_points.shape[0]
+        num_test = batch_test_points.shape[0]
         num_train = self.train_points.shape[0]
         dists = np.zeros((num_test, num_train))
         for i in range(num_test):
-            dists[i] = np.sqrt(np.sum(np.square(test_points[i] - self.train_points[:]), axis=1))
+            dists[i] = np.sqrt(np.sum(np.square(batch_test_points[i] - self.train_points[:]), axis=1))
         return dists
 
-    def _compute_distances_no_loops(self, test_points):
+    def _compute_distances_no_loops(self, batch_test_points):
         """
         Compute the distance between each test point in X and each training point
         in self.X_train using no explicit loops.
 
         Input / Output: Same as compute_distances_two_loops
         """
-        num_test = test_points.shape[0]
+        num_test = batch_test_points.shape[0]
         num_train = self.train_points.shape[0]
         dists = np.zeros((num_test, num_train))
 
@@ -111,7 +111,7 @@ class KNearestNeighbor(object):
         # computes the $\sqrt$ per-element. This gets us our distances.
         # Retrieved from StackOverflow:
         # http://stackoverflow.com/questions/32856726/memory-efficient-l2-norm-using-python-broadcasting
-        x, y = test_points, self.train_points
+        x, y = batch_test_points, self.train_points
         x2 = np.sum(x**2, axis=1, keepdims=True)    # (m, 1)
         y2 = np.sum(y**2, axis=1)                                 # (1, n)
         xy = np.dot(x, y.T)
