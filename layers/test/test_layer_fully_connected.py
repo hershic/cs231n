@@ -44,7 +44,8 @@ class TestLayerFullyConnectedDirected(unittest.TestCase):
                                 [14, 30, 15, 21, 23]])
         self.labels = np.array([2, 1, 0, 0, 2])
         self.layer = LayerFullyConnected(
-            self.points.shape[1], self.scores.shape[1], self.weights)
+            self.points.shape[1], self.scores.shape[1])
+        self.layer.weights = self.weights
         self.classifier = LinearSVM(self.scores.shape)
 
     def test_naive_directed(self):
