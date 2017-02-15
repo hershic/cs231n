@@ -14,15 +14,13 @@ class ClassifierSoftmax():
         of N examples.
 
         Inputs:
-        - W: A numpy array of shape (D, C) containing weights.
-        - X: A numpy array of shape (N, D) containing a minibatch of data.
-        - y: A numpy array of shape (N,) containing training labels; y[i] = c means
-          that X[i] has label c, where 0 <= c < C.
-        - reg: (float) regularization strength
+        - scores: A numpy array of shape (N, D) containing the scores of a batch of data.
+        - labels: A numpy array of shape (N,) containing training labels; labels[i] = c
+            means that scores[i] has label c, where 0 <= c < number of labels in scores.
 
         Returns a tuple of:
         - loss as single float
-        - gradient with respect to weights W; an array of same shape as W
+        - gradient with respect to the scores, same shape as the scores (N, D)
         """
         # Initialize the loss and gradient to zero.
         loss = 0.0
@@ -86,7 +84,17 @@ class ClassifierSoftmax():
         """
         Softmax loss function, vectorized version.
 
-        Inputs and outputs are the same as softmax_loss_naive.
+        Inputs have dimension D, there are C classes, and we operate on minibatches
+        of N examples.
+
+        Inputs:
+        - scores: A numpy array of shape (N, D) containing the scores of a batch of data.
+        - labels: A numpy array of shape (N,) containing training labels; labels[i] = c
+            means that scores[i] has label c, where 0 <= c < number of labels in scores.
+
+        Returns a tuple of:
+        - loss as single float
+        - gradient with respect to the scores, same shape as the scores (N, D)
         """
         # Initialize the loss to zero.
         loss = 0.0
