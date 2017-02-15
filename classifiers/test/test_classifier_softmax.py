@@ -9,6 +9,8 @@ from samplers.sampler_random import SamplerRandom
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
+# TODO: clean this up! There's so much duplicated code below...
+
 
 class TestClassifierSoftmax(unittest.TestCase):
     def setUp(self):
@@ -50,17 +52,21 @@ class TestClassifierSoftmax(unittest.TestCase):
 
         self.scores = self.layer.forward_vectorized(self.train_points)
 
-    def xtestSoftmaxLossNaive(self):
+    def testSoftmaxLossNaive(self):
         loss, grad = self.classifier.softmax_loss_naive(
             self.scores, self.train_labels)
-        self.assertLess(loss, 10)
-        self.assertGreater(loss, 8)
+        # Kaparthy says we should expect a probablity around $-\log(0.1) =
+        # 2.302$. Check for that here
+        self.assertLess(loss, 2.5)
+        self.assertGreater(loss, 2)
 
-    def xtestSoftmaxLossVectorized(self):
+    def testSoftmaxLossVectorized(self):
         loss, grad = self.classifier.softmax_loss_vectorized(
             self.scores, self.train_labels)
-        self.assertLess(loss, 10)
-        self.assertGreater(loss, 8)
+        # Kaparthy says we should expect a probablity around $-\log(0.1) =
+        # 2.302$. Check for that here
+        self.assertLess(loss, 2.5)
+        self.assertGreater(loss, 2)
 
 
 class TestClassifierSoftmaxDirected0(unittest.TestCase):
@@ -74,7 +80,7 @@ class TestClassifierSoftmaxDirected0(unittest.TestCase):
             self.scores, self.train_labels)
         self.assertAlmostEqual(loss, 2.04035515)
 
-    def xtestSoftmaxLossVectorized(self):
+    def testSoftmaxLossVectorized(self):
         loss, grad = self.classifier.softmax_loss_vectorized(
             self.scores, self.train_labels)
         self.assertAlmostEqual(loss, 2.04035515)
@@ -91,10 +97,27 @@ class TestClassifierSoftmaxDirected1(unittest.TestCase):
             self.scores, self.train_labels)
         self.assertAlmostEqual(loss, 1.04019057)
 
-    def xtestSoftmaxLossVectorized(self):
+    def testSoftmaxLossVectorized(self):
         loss, grad = self.classifier.softmax_loss_vectorized(
             self.scores, self.train_labels)
         self.assertAlmostEqual(loss, 1.04019057)
+
+
+class TestClassifierSoftmaxDirected2(unittest.TestCase):
+    def setUp(self):
+        self.scores = np.array([[-2.85000, 3.2], [0.86000, 5.1], [0.28000, -1.7]])
+        self.train_labels = np.array([2, 0])
+        self.classifier = ClassifierSoftmax(self.scores.shape)
+
+    def testSoftmaxLossNaive(self):
+        loss, grad = self.classifier.softmax_loss_naive(
+            self.scores, self.train_labels)
+        self.assertAlmostEqual(loss, (1.04019057 + 2.04035515) / 2)
+
+    def testSoftmaxLossVectorized(self):
+        loss, grad = self.classifier.softmax_loss_vectorized(
+            self.scores, self.train_labels)
+        self.assertAlmostEqual(loss, (1.04019057 + 2.04035515) / 2)
 
 
 class TestClassifierSoftmaxGradient(unittest.TestCase):
@@ -104,18 +127,20 @@ class TestClassifierSoftmaxGradient(unittest.TestCase):
         self.labels = np.array([2])
         self.classifier = ClassifierSoftmax(self.scores.shape)
 
-    def xtestSoftmaxGradient(self):
+    def testGradientNaive(self):
+        (loss, gradient) = self.classifier.softmax_loss_naive(
+            self.scores, self.labels)
+        self.gradientCheck(loss, gradient)
+
+    def testGradientVectorized(self):
         (loss, gradient) = self.classifier.softmax_loss_vectorized(
             self.scores, self.labels)
+        self.gradientCheck(loss, gradient)
 
-    def testGradient(self):
-        (lossOriginal, analyticGradient) = self.classifier.softmax_loss_naive(
-            self.scores, self.labels)
+    def gradientCheck(self, lossOriginal, analyticGradient):
         # preserve the gradient
         analyticGradient = np.array(analyticGradient, copy=True)
         h = 1e-5
-
-        print('\n\n\n\n')
 
         numericalGradient = np.zeros(analyticGradient.shape)
         for row in range(self.scores.shape[0]):
@@ -126,14 +151,4 @@ class TestClassifierSoftmaxGradient(unittest.TestCase):
                 grad = (loss - lossOriginal) / h
                 numericalGradient[row, col] = grad
                 self.scores[row, col] -= h
-
-        print('\nlossOriginal')
-        print(lossOriginal)
-        print('\nloss')
-        print(loss)
-        print('\nnumericalGradient')
-        print(numericalGradient)
-        print('\nanalyticGradient')
-        print(analyticGradient)
-
         self.assertTrue(np.all(np.isclose(numericalGradient, analyticGradient)))
