@@ -13,12 +13,10 @@ class TestLayerFullyConnected(unittest.TestCase):
         self.num_classes = 100
         self.num_points = 1000
         self.point_size = 20000
-        self.weights = np.random.randn(self.num_classes, self.point_size)
         self.points = np.random.randn(self.num_points, self.point_size)
 
-    @allow_failure
     def test_timing(self):
-        layer = LayerFullyConnected(self.num_points, self.num_classes, self.weights)
+        layer = LayerFullyConnected(self.point_size, self.num_classes)
         time_naive = time_function(layer.forward_naive, self.points)
         time_vectorized = time_function(layer.forward_vectorized, self.points)
         # the vectorized implementation should become increasingly faster as

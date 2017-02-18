@@ -7,15 +7,15 @@ class LayerFullyConnected:
     connected to each output score with some weight.
 
     Inputs:
-    - num_inputs: The number of input points in each dataset point, i.e. the
-        number of pixels in an input image. (points_per_datum,)
+    - input_point_size: The number of input points in each dataset point, e.g.
+        the number of pixels in an input image. (points_per_datum,)
     - num_outputs: The number of output activation points the network should
-        return, i.e. the number of classifications available.
+        return, e.g. the number of classifications available.
         (num_classifications,)
     """
-    def __init__(self, num_inputs, num_outputs):
-        self.weights = np.random.randn(num_outputs, num_inputs) * 1e-4
-        self.gradient = np.zeros((num_outputs, num_inputs))
+    def __init__(self, input_point_size, num_outputs):
+        self.weights = np.random.randn(num_outputs, input_point_size) * 1e-4
+        self.gradient = np.zeros((num_outputs, input_point_size))
 
     def forward_naive(self, batch_points):
         """
