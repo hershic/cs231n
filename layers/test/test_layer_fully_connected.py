@@ -8,7 +8,7 @@ from classifiers.linear_svm import LinearSVM
 from utils.allow_failure import allow_failure
 
 
-class TestLayerFullyConnected(unittest.TestCase):
+class TestLayerFullyConnectedTiming(unittest.TestCase):
     def setUp(self):
         self.num_classes = 100
         self.num_points = 1000
