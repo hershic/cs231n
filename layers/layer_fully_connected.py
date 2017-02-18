@@ -7,15 +7,16 @@ class LayerFullyConnected:
     connected to each output score with some weight.
 
     Inputs:
-    - input_point_size: The number of input points in each dataset point, e.g.
-        the number of pixels in an input image. (points_per_datum,)
-    - num_outputs: The number of output activation points the network should
+    - input_dim: The number of input points in each dataset point, e.g. the
+        number of pixels in an input image. (points_per_datum,)
+    - output_dim: The number of output activation points the network should
         return, e.g. the number of classifications available.
         (num_classifications,)
     """
-    def __init__(self, input_point_size, num_outputs):
-        self.weights = np.random.randn(num_outputs, input_point_size) * 1e-4
-        self.gradient = np.zeros((num_outputs, input_point_size))
+    def __init__(self, input_dim, output_dim):
+        self.weights = np.random.randn(input_dim, output_dim) * 1e-4
+        self.bias = np.random.randn(output_dim) * 1e-4
+        self.gradient = np.zeros((output_dim, input_dim))
 
     def forward_naive(self, batch_points):
         """
@@ -31,12 +32,12 @@ class LayerFullyConnected:
         Outputs:
         - scores: (num_classifications, batch_size)
         """
-        num_outputs = self.weights.shape[0]
-        num_inputs = batch_points.shape[0]
-        scores = np.zeros((num_inputs, num_outputs))
-        for i in range(num_inputs):
-            scores[i] = self.weights.dot(batch_points[i])
-        return scores.T
+        batch_size = batch_points.shape[0]
+        num_outputs = self.weights.shape[1]
+        scores = np.zeros((batch_size, num_outputs))
+        for i in range(batch_size):
+            scores[i] = batch_points[i].dot(self.weights)
+        return scores + self.bias
 
     def forward_vectorized(self, batch_points):
         """
@@ -54,4 +55,4 @@ class LayerFullyConnected:
         """
         # TODO obtain and cache the gradient
         self.gradient = self.weights
-        return self.weights.dot(batch_points.T)
+        return batch_points.dot(self.weights) + self.bias

@@ -34,16 +34,21 @@ class TestLayerFullyConnectedDirected(unittest.TestCase):
                                 [1, 2, 3, 1],
                                 [2, 3, 2, 2],
                                 [2, 3, 1, 3]])
-        self.weights = np.array([[1, 2, 3, 2],
-                                 [2, 4, 2, 3],
-                                 [3, 1, 2, 4]])
-        self.scores = np.array([[15, 20, 16, 18, 17],
-                                [21, 32, 19, 26, 27],
-                                [14, 30, 15, 21, 23]])
+        self.weights = np.array([[1, 2, 3],
+                                 [2, 4, 1],
+                                 [3, 2, 2],
+                                 [2, 3, 4]])
+        self.bias = np.array([2, 1, 4])
+        self.scores = np.array([[15, 21, 14],
+                                [20, 32, 30],
+                                [16, 19, 15],
+                                [18, 26, 21],
+                                [17, 27, 23]]) + self.bias
         self.labels = np.array([2, 1, 0, 0, 2])
         self.layer = LayerFullyConnected(
             self.points.shape[1], self.scores.shape[1])
         self.layer.weights = self.weights
+        self.layer.bias = self.bias
         self.classifier = LinearSVM(self.scores.shape)
 
     def test_naive_directed(self):
