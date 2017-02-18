@@ -24,7 +24,7 @@ class TestLayerFullyConnectedTiming(unittest.TestCase):
         self.assertLess(time_vectorized * 5, time_naive)
 
 
-class TestLayerFullyConnectedDirected(unittest.TestCase):
+class TestLayerFullyConnectedDirected0(unittest.TestCase):
     def setUp(self):
         # This is a test data set with 4 points per input and 3 output
         # classifications. I have independently precalculated and verified the
@@ -64,3 +64,27 @@ class TestLayerFullyConnectedDirected(unittest.TestCase):
         time_naive = time_function(self.layer.forward_naive, self.points)
         time_vectorized = time_function(self.layer.forward_vectorized, self.points)
         self.assertLess(time_vectorized * 2, time_naive)
+
+
+class TestLayerFullyConnectedDirected1(unittest.TestCase):
+    def setUp(self):
+        num_inputs = 2
+        input_dim = 120
+        output_dim = 3
+
+        input_size = num_inputs * np.prod(input_dim)
+        weight_size = output_dim * np.prod(input_dim)
+
+        self.points = np.linspace(-0.1, 0.5, num=input_size).reshape(num_inputs, input_dim)
+        self.weights = np.linspace(-0.2, 0.3, num=weight_size).reshape(np.prod(input_dim), output_dim)
+        self.bias = np.linspace(-0.3, 0.1, num=output_dim)
+
+        self.layer = LayerFullyConnected(input_dim, output_dim)
+        self.layer.weights = self.weights
+        self.layer.bias = self.bias
+        self.scores = np.array([[1.49834967, 1.70660132, 1.91485297],
+                                [3.25553199, 3.5141327,  3.77273342]])
+
+    def test_vectorized(self):
+        scores = self.layer.forward_vectorized(self.points)
+        self.assertTrue(np.allclose(scores, self.scores))
