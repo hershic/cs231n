@@ -49,7 +49,6 @@ class TestLayerFullyConnectedDirected0(unittest.TestCase):
             self.points.shape[1], self.scores.shape[1])
         self.layer.weights = self.weights
         self.layer.bias = self.bias
-        self.classifier = LinearSVM(self.scores.shape)
 
     def test_naive_directed(self):
         scores = self.layer.forward_naive(self.points)
