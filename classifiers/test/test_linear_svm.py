@@ -49,7 +49,7 @@ class TestLinearSVM(unittest.TestCase):
         self.layer = LayerFullyConnected(
             self.train_points.shape[1], self.num_classifications)
         self.classifier = LinearSVM(
-            (self.num_classifications, self.train_points.shape[0]))
+            (self.train_points.shape[0], self.num_classifications))
 
         self.scores = self.layer.forward_vectorized(self.train_points)
 
@@ -86,9 +86,11 @@ class TestLinearSVMDirected0(unittest.TestCase):
                                 [1, 2, 3, 1],
                                 [2, 3, 2, 2],
                                 [2, 3, 1, 3]])
-        self.scores = np.array([[15, 20, 16, 18, 17],
-                                [21, 32, 19, 26, 27],
-                                [14, 30, 15, 21, 23]])
+        self.scores = np.array([[15, 21, 14],
+                                [20, 32, 30],
+                                [16, 19, 15],
+                                [18, 26, 21],
+                                [17, 27, 23]]);
         self.labels = np.array([2, 1, 0, 0, 2])
         self.classifier = LinearSVM(self.scores.shape)
 
@@ -100,9 +102,9 @@ class TestLinearSVMDirected0(unittest.TestCase):
 
 class TestLinearSVMDirected1(unittest.TestCase):
     def setUp(self):
-        self.scores = np.array([[3.2, 1.3, 2.2],
-                                [5.1, 4.9, 2.5],
-                                [-1.7, 2.0, -3.1]])
+        self.scores = np.array([[3.2, 5.1, -1.7],
+                                [1.3, 4.9, 2],
+                                [2.2, 2.5, -3.1]])
         self.labels = np.array([0, 1, 2])
         self.classifier = LinearSVM(self.scores.shape)
 
@@ -115,7 +117,7 @@ class TestLinearSVMDirected1(unittest.TestCase):
 class TestLinearSVMGradient(unittest.TestCase):
     def setUp(self):
         self.points = np.array([[1, 3, 2, 1]], dtype=float)
-        self.scores = np.array([[15], [21], [14]], dtype=float)
+        self.scores = np.array([[15, 21, 14]], dtype=float)
         self.labels = np.array([2])
         self.classifier = LinearSVM(self.scores.shape)
 
