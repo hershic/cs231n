@@ -32,7 +32,7 @@ def eval_numerical_gradient(f, x, verbose=True, h=0.00001):
   return grad
 
 
-def eval_numerical_gradient_array(f, x, df, h=1e-5):
+def eval_numerical_gradient_array(f, x, h=1e-5):
   """
   Evaluate a numeric gradient for a function that accepts a numpy
   array and returns a numpy array.
@@ -48,8 +48,7 @@ def eval_numerical_gradient_array(f, x, df, h=1e-5):
     x[ix] = oldval - h
     neg = f(x).copy()
     x[ix] = oldval
-
-    grad[ix] = np.sum((pos - neg) * df) / (2 * h)
+    grad[ix] = np.sum((pos - neg)) / (2 * h)
     it.iternext()
   return grad
 

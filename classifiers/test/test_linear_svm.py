@@ -4,6 +4,7 @@ import numpy as np
 from classifiers.linear_svm import LinearSVM
 from importers.importer_cifar10 import ImporterCIFAR10
 from layers.layer_fully_connected import LayerFullyConnected
+from lib.gradient_check import eval_numerical_gradient_array
 from partitioners.partitioner_range_split import PartitionerRangeSplit
 from samplers.sampler_random import SamplerRandom
 from utils.timing import time_function
@@ -65,7 +66,6 @@ class TestLinearSVM(unittest.TestCase):
         self.assertLess(loss, 10)
         self.assertGreater(loss, 8)
 
-    @allow_failure
     def testTiming(self):
         naive_time = time_function(
             self.classifier.svm_loss_naive,
@@ -118,28 +118,28 @@ class TestLinearSVMGradient(unittest.TestCase):
     def setUp(self):
         self.points = np.array([[1, 3, 2, 1]], dtype=float)
         self.scores = np.array([[15, 21, 14]], dtype=float)
+        self.gradient = np.array([[1, 1, -2]], dtype=float)
         self.labels = np.array([2])
         self.classifier = LinearSVM(self.scores.shape)
 
-    def testSVMGradient(self):
+    def testGradientVectorized(self):
         (loss, gradient) = self.classifier.svm_loss_vectorized(
             self.scores, self.labels)
 
-    def testGradient(self):
+    def testGradientVectorized(self):
         (lossOriginal, analyticGradient) = self.classifier.svm_loss_vectorized(
             self.scores, self.labels)
-        # preserve the gradient
-        analyticGradient = np.array(analyticGradient, copy=True)
-        h = 1e-6
+        analyticGradient = analyticGradient.copy()
+        numericalGradient = eval_numerical_gradient_array(
+            lambda scores: self.classifier.svm_loss_vectorized(scores, self.labels)[0],
+            self.scores)
+        self.assertTrue(np.all(np.isclose(numericalGradient, analyticGradient)))
 
-        numericalGradient = np.zeros(analyticGradient.shape)
-        for row in range(self.scores.shape[0]):
-            for col in range(self.scores.shape[1]):
-                self.scores[row, col] += h
-                (loss, _) = self.classifier.svm_loss_vectorized(
-                    self.scores, self.labels)
-                grad = (loss - lossOriginal) / h
-                numericalGradient[row, col] = grad
-                self.scores[row, col] -= h
-
+    def testGradientNaive(self):
+        (lossOriginal, analyticGradient) = self.classifier.svm_loss_naive(
+            self.scores, self.labels)
+        analyticGradient = analyticGradient.copy()
+        numericalGradient = eval_numerical_gradient_array(
+            lambda scores: self.classifier.svm_loss_naive(scores, self.labels)[0],
+            self.scores)
         self.assertTrue(np.all(np.isclose(numericalGradient, analyticGradient)))
