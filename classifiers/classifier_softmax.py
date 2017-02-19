@@ -33,14 +33,14 @@ class ClassifierSoftmax():
 
         # $$L_i = -\log\left(\frac{e^{s_{y_i}}}{\sum_j e^{s_j}}\right)$$
 
-        num_classes = scores.shape[0]
-        num_points = scores.shape[1]
+        num_points = scores.shape[0]
+        num_classes = scores.shape[1]
 
         # First we exponentiate each parameter.
         local_scores = np.exp(scores)
 
         # Second we compute the scores sum (for later use).
-        scores_sum = np.sum(local_scores, axis=0)
+        scores_sum = np.sum(local_scores, axis=1)
 
         # Third, using the scores sums, compute the gradient of the softmax
         # function. The gradient looks like:
@@ -58,24 +58,24 @@ class ClassifierSoftmax():
         # $$\frac{\text{d}L_i}{\text{d}s_2} = -\frac{e^{s_0} + e^{s_1}}{\sum_k e^{s_k}}$$
 
         # The naive calculation is below. We store the gradient in self.
-        for i in range(num_classes):
-            for j in range(num_points):
-                if i == labels[j]:
+        for i in range(num_points):
+            for j in range(num_classes):
+                if j == labels[i]:
                     # this is really bad because subtraction allows for
                     # numerical instability and dropoff, but it's good enough
                     # for a naive approach
-                    self.gradient[i, j] = -1 * (scores_sum[j] - local_scores[i, j]) / scores_sum[j]
+                    self.gradient[i, j] = -1 * (scores_sum[i] - local_scores[i, j]) / scores_sum[i]
                 else:
-                    self.gradient[i, j] = local_scores[i, j] / scores_sum[j]
+                    self.gradient[i, j] = local_scores[i, j] / scores_sum[i]
 
         # Third we normalize each parameter with respect to the other
         # parameters.
-        for i in range(num_classes):
-            for j in range(num_points):
-                local_scores[i, j] /= scores_sum[j]
+        for i in range(num_points):
+            for j in range(num_classes):
+                local_scores[i, j] /= scores_sum[i]
 
         # Finally, we obtain our final loss.
-        correct_classification_indices = (labels, np.arange(num_points))
+        correct_classification_indices = (np.arange(num_points), labels)
         loss = np.sum(-1 * np.log(local_scores[correct_classification_indices])) / num_points
 
         return loss, self.gradient
@@ -98,7 +98,7 @@ class ClassifierSoftmax():
         """
         # Initialize the loss to zero.
         loss = 0.0
-        num_points = scores.shape[1]
+        num_points = scores.shape[0]
 
         # Before we do anything: Dividing large numbers is potentially
         # numerically unstable. Normalize the numbers by subtracting the
@@ -118,12 +118,12 @@ class ClassifierSoftmax():
         local_scores = np.exp(local_scores)
 
         # Second we compute the scores sum (for later use).
-        scores_sum = np.sum(local_scores, axis=0)
+        scores_sum = np.sum(local_scores, axis=1)
 
         # Third normalize the scores. Both the gradient general case ($j \ne
         # y_i$) and the loss depends on the normalized scores.
-        correct_classification_indices = (labels, np.arange(num_points))
-        normalized_scores = local_scores / scores_sum
+        correct_classification_indices = (np.arange(num_points), labels)
+        normalized_scores = (local_scores.T / scores_sum).T
         loss = np.sum(-1 * np.log(normalized_scores[correct_classification_indices])) / num_points
 
         # Fourth compute the gradient. The gradient looks like:
