@@ -25,10 +25,6 @@ class LinearSVM(LinearClassifier):
         - gradient with respect to batch_scores in the same shape as
             batch_scores
         """
-        # TODO: it's unclear if the gradient calculation with the weight shape
-        # needs to be done here.
-        # dW = np.zeros(W.shape) # initialize the gradient as zero
-        dW = 0
 
         # compute the loss and the gradient
         num_points = batch_scores.shape[0]
@@ -38,25 +34,21 @@ class LinearSVM(LinearClassifier):
             correct_class_score = batch_scores[i, batch_labels[i]]
             for j in range(num_classes):
                 if j == batch_labels[i]:
+                    self.gradient[i, j] = -1 * num_classes + 1
                     continue
-                margin = batch_scores[i][j] - correct_class_score + 1    # note delta = 1
+                # note delta = 1
+                margin = batch_scores[i][j] - correct_class_score + 1
                 if margin > 0:
                     loss += margin
+                    self.gradient[i, j] = 1
+                else:
+                    self.gradient[i, j] = 0
 
         # Right now the loss is a sum over all training examples, but we want it
         # to be an average instead so we divide by num_train.
         loss /= num_points
 
-        #############################################################################
-        # TODO:                                                                     #
-        # Compute the gradient of the loss function and store it dW.                #
-        # Rather that first computing the loss and then computing the derivative,   #
-        # it may be simpler to compute the derivative at the same time that the     #
-        # loss is being computedd. As a result you may need to modify some of the   #
-        # code above to compute the gradient.                                       #
-        #############################################################################
-
-        return loss, dW
+        return loss, self.gradient
 
     def svm_loss_vectorized(self, batch_scores, batch_labels):
         """
