@@ -66,37 +66,37 @@ class TestLayerFullyConnectedDirected0(unittest.TestCase):
 
 
 class TestLayerFullyConnectedGradientBase(unittest.TestCase):
-    def gradient_batch_points(self, layer, weights, bias, points):
-        return layer.forward_vectorized(points)
+    def gradient_batch_points(self, points):
+        return self.layer.forward_vectorized(points)
 
-    def gradient_bias(self, layer, weights, bias, points):
+    def gradient_bias(self, bias):
         cached_bias = layer.bias
-        layer.bias = bias
-        ret = layer.forward_vectorized(points)
-        layer.bias = cached_bias
+        self.layer.bias = self.bias
+        ret = self.layer.forward_vectorized(self.points)
+        self.layer.bias = cached_bias
         return ret
 
-    def gradient_weights(self, layer, weights, bias, points):
-        cached_weights = layer.weights
-        layer.weights = weights
-        ret = layer.forward_vectorized(points)
-        layer.weights = cached_weights
+    def gradient_weights(self, weights):
+        cached_weights = self.layer.weights
+        self.layer.weights = weights
+        ret = self.layer.forward_vectorized(self.points)
+        self.layer.weights = cached_weights
         return ret
 
     def numerical_d_batch_points(self):
         return eval_numerical_gradient_array(
-            lambda batch_points: self.gradient_batch_points(self.layer, self.weights, self.bias, batch_points),
-            self.points, self.gradient)
+            lambda batch_points: self.gradient_batch_points(batch_points),
+            self.points)
 
     def numerical_d_weights(self):
         return eval_numerical_gradient_array(
-            lambda weights: self.gradient_weights(self.layer, weights, self.bias, self.points),
-            self.weights, self.gradient)
+            lambda weights: self.gradient_weights(weights),
+            self.weights)
 
     def numerical_d_bias(self):
         return eval_numerical_gradient_array(
-            lambda bias: self.gradient_batch_points(self.layer, self.weights, bias, self.points),
-            self.bias, self.gradient)
+            lambda bias: self.gradient_batch_points(bias),
+            self.bias)
 
 
 class TestLayerFullyConnectedDirected1(TestLayerFullyConnectedGradientBase):
