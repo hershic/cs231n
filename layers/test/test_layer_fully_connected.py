@@ -70,8 +70,8 @@ class TestLayerFullyConnectedGradientBase(unittest.TestCase):
         return self.layer.forward_vectorized(points)
 
     def gradient_bias(self, bias):
-        cached_bias = layer.bias
-        self.layer.bias = self.bias
+        cached_bias = self.layer.bias
+        self.layer.bias = bias
         ret = self.layer.forward_vectorized(self.points)
         self.layer.bias = cached_bias
         return ret
@@ -95,7 +95,7 @@ class TestLayerFullyConnectedGradientBase(unittest.TestCase):
 
     def numerical_d_bias(self):
         return eval_numerical_gradient_array(
-            lambda bias: self.gradient_batch_points(bias),
+            lambda bias: self.gradient_bias(bias),
             self.bias, self.gradient)
 
 
@@ -132,9 +132,9 @@ class TestLayerFullyConnectedDirected1(TestLayerFullyConnectedGradientBase):
         # only for side-effects
         _ = self.layer.forward_vectorized(self.points)
 
-        numerical_d_batch_points = self.numerical_d_batch_points()
-        numerical_d_weights = self.numerical_d_weights()
-        numerical_d_bias = self.numerical_d_bias()
+        numerical_d_batch_points = self.numerical_d_batch_points().copy()
+        numerical_d_weights = self.numerical_d_weights().copy()
+        numerical_d_bias = self.numerical_d_bias().copy()
 
         # only for side-effects
         _ = self.layer.backward_vectorized(self.gradient)
