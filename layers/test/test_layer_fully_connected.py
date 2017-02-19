@@ -15,6 +15,7 @@ class TestLayerFullyConnectedTiming(unittest.TestCase):
         self.point_size = 20000
         self.points = np.random.randn(self.num_points, self.point_size)
 
+    @allow_failure
     def test_timing(self):
         layer = LayerFullyConnected(self.point_size, self.num_classes)
         time_naive = time_function(layer.forward_naive, self.points)
