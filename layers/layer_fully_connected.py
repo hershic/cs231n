@@ -16,7 +16,14 @@ class LayerFullyConnected:
     def __init__(self, input_dim, output_dim):
         self.weights = np.random.randn(input_dim, output_dim) * 1e-4
         self.bias = np.random.randn(output_dim) * 1e-4
-        self.gradient = np.zeros((output_dim, input_dim))
+
+        self.d_weights = np.ones((output_dim, input_dim))
+        self.d_bias = np.ones((output_dim,))
+
+    def _cache_gradients(self, batch_points):
+        self.d_batch_points = self.weights
+        self.d_weights = batch_points
+        self.d_bias = np.ones(self.d_bias.shape)
 
     def forward_naive(self, batch_points):
         """
@@ -32,6 +39,8 @@ class LayerFullyConnected:
         Outputs:
         - scores: (num_classifications, batch_size)
         """
+        self._cache_gradients(batch_points)
+
         batch_size = batch_points.shape[0]
         num_outputs = self.weights.shape[1]
         scores = np.zeros((batch_size, num_outputs))
@@ -53,6 +62,11 @@ class LayerFullyConnected:
         Outputs:
         - scores: (num_classifications, batch_size)
         """
-        # TODO obtain and cache the gradient
-        self.gradient = self.weights
+        self._cache_gradients(batch_points)
         return batch_points.dot(self.weights) + self.bias
+
+    def backward_vectorized(self, gradient):
+        self.d_batch_points = gradient.dot(self.d_batch_points.T)
+        self.d_weights = self.d_weights.T.dot(gradient)
+        self.d_bias = np.sum(self.d_bias * gradient, axis=0)
+        return self.d_batch_points

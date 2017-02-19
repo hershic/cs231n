@@ -2,8 +2,8 @@ import unittest
 import numpy as np
 
 from layers.layer_fully_connected import LayerFullyConnected
+from lib.gradient_check import eval_numerical_gradient_array
 from utils.timing import time_function
-from classifiers.linear_svm import LinearSVM
 
 from utils.allow_failure import allow_failure
 
@@ -66,7 +66,41 @@ class TestLayerFullyConnectedDirected0(unittest.TestCase):
         self.assertLess(time_vectorized * 2, time_naive)
 
 
-class TestLayerFullyConnectedDirected1(unittest.TestCase):
+class TestLayerFullyConnectedGradientBase(unittest.TestCase):
+    def gradient_batch_points(self, layer, weights, bias, points):
+        return layer.forward_vectorized(points)
+
+    def gradient_bias(self, layer, weights, bias, points):
+        cached_bias = layer.bias
+        layer.bias = bias
+        ret = layer.forward_vectorized(points)
+        layer.bias = cached_bias
+        return ret
+
+    def gradient_weights(self, layer, weights, bias, points):
+        cached_weights = layer.weights
+        layer.weights = weights
+        ret = layer.forward_vectorized(points)
+        layer.weights = cached_weights
+        return ret
+
+    def numerical_d_batch_points(self):
+        return eval_numerical_gradient_array(
+            lambda batch_points: self.gradient_batch_points(self.layer, self.weights, self.bias, batch_points),
+            self.points, self.gradient)
+
+    def numerical_d_weights(self):
+        return eval_numerical_gradient_array(
+            lambda weights: self.gradient_weights(self.layer, weights, self.bias, self.points),
+            self.weights, self.gradient)
+
+    def numerical_d_bias(self):
+        return eval_numerical_gradient_array(
+            lambda bias: self.gradient_batch_points(self.layer, self.weights, bias, self.points),
+            self.bias, self.gradient)
+
+
+class TestLayerFullyConnectedDirected1(TestLayerFullyConnectedGradientBase):
     def setUp(self):
         num_inputs = 2
         input_dim = 120
@@ -84,7 +118,28 @@ class TestLayerFullyConnectedDirected1(unittest.TestCase):
         self.layer.bias = self.bias
         self.scores = np.array([[1.49834967, 1.70660132, 1.91485297],
                                 [3.25553199, 3.5141327,  3.77273342]])
+        self.gradient = np.array([[1, 1, 1],
+                                  [3, 3, 3]])
+
+    def test_naive(self):
+        scores = self.layer.forward_vectorized(self.points)
+        self.assertTrue(np.allclose(scores, self.scores))
 
     def test_vectorized(self):
         scores = self.layer.forward_vectorized(self.points)
         self.assertTrue(np.allclose(scores, self.scores))
+
+    def test_vectorized_gradient(self):
+        # only for side-effects
+        _ = self.layer.forward_vectorized(self.points)
+
+        numerical_d_batch_points = self.numerical_d_batch_points()
+        numerical_d_weights = self.numerical_d_weights()
+        numerical_d_bias = self.numerical_d_bias()
+
+        # only for side-effects
+        _ = self.layer.backward_vectorized(self.gradient)
+
+        self.assertTrue(np.allclose(numerical_d_weights, self.layer.d_weights))
+        self.assertTrue(np.allclose(numerical_d_batch_points, self.layer.d_batch_points))
+        self.assertTrue(np.allclose(numerical_d_bias, self.layer.d_bias))
