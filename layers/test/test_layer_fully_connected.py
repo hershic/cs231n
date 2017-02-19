@@ -86,17 +86,17 @@ class TestLayerFullyConnectedGradientBase(unittest.TestCase):
     def numerical_d_batch_points(self):
         return eval_numerical_gradient_array(
             lambda batch_points: self.gradient_batch_points(batch_points),
-            self.points)
+            self.points, self.gradient)
 
     def numerical_d_weights(self):
         return eval_numerical_gradient_array(
             lambda weights: self.gradient_weights(weights),
-            self.weights)
+            self.weights, self.gradient)
 
     def numerical_d_bias(self):
         return eval_numerical_gradient_array(
             lambda bias: self.gradient_batch_points(bias),
-            self.bias)
+            self.bias, self.gradient)
 
 
 class TestLayerFullyConnectedDirected1(TestLayerFullyConnectedGradientBase):
@@ -139,6 +139,6 @@ class TestLayerFullyConnectedDirected1(TestLayerFullyConnectedGradientBase):
         # only for side-effects
         _ = self.layer.backward_vectorized(self.gradient)
 
-        self.assertTrue(np.allclose(numerical_d_weights, self.layer.d_weights))
         self.assertTrue(np.allclose(numerical_d_batch_points, self.layer.d_batch_points))
+        self.assertTrue(np.allclose(numerical_d_weights, self.layer.d_weights))
         self.assertTrue(np.allclose(numerical_d_bias, self.layer.d_bias))

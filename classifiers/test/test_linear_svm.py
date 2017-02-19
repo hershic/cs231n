@@ -4,7 +4,7 @@ import numpy as np
 from classifiers.linear_svm import LinearSVM
 from importers.importer_cifar10 import ImporterCIFAR10
 from layers.layer_fully_connected import LayerFullyConnected
-from lib.gradient_check import eval_numerical_gradient_array
+from lib.gradient_check import eval_numerical_gradient
 from partitioners.partitioner_range_split import PartitionerRangeSplit
 from samplers.sampler_random import SamplerRandom
 from utils.timing import time_function
@@ -130,7 +130,7 @@ class TestLinearSVMGradient(unittest.TestCase):
         (lossOriginal, analyticGradient) = self.classifier.svm_loss_vectorized(
             self.scores, self.labels)
         analyticGradient = analyticGradient.copy()
-        numericalGradient = eval_numerical_gradient_array(
+        numericalGradient = eval_numerical_gradient(
             lambda scores: self.classifier.svm_loss_vectorized(scores, self.labels)[0],
             self.scores)
         self.assertTrue(np.all(np.isclose(numericalGradient, analyticGradient)))
@@ -139,7 +139,7 @@ class TestLinearSVMGradient(unittest.TestCase):
         (lossOriginal, analyticGradient) = self.classifier.svm_loss_naive(
             self.scores, self.labels)
         analyticGradient = analyticGradient.copy()
-        numericalGradient = eval_numerical_gradient_array(
+        numericalGradient = eval_numerical_gradient(
             lambda scores: self.classifier.svm_loss_naive(scores, self.labels)[0],
             self.scores)
         self.assertTrue(np.all(np.isclose(numericalGradient, analyticGradient)))
