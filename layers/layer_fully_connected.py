@@ -7,18 +7,16 @@ class LayerFullyConnected:
     connected to each output score with some weight.
 
     Inputs:
-    - input_dim: The number of input points in each dataset point, e.g. the
-        number of pixels in an input image. (points_per_datum,)
-    - output_dim: The number of output activation points the network should
-        return, e.g. the number of classifications available.
-        (num_classifications,)
+    - transformation_shape: The shape of the transformation between input
+      points, e.g. the number of pixels in an input image and output points,
+      e.g. the number of classifications available.
     """
-    def __init__(self, input_dim, output_dim):
-        self.weights = np.random.randn(input_dim, output_dim) * 1e-4
-        self.bias = np.random.randn(output_dim) * 1e-4
+    def __init__(self, transformation_shape):
+        self.weights = np.random.randn(*transformation_shape) * 1e-4
+        self.bias = np.random.randn(transformation_shape[1]) * 1e-4
 
-        self.d_weights = np.ones((output_dim, input_dim))
-        self.d_bias = np.ones((output_dim,))
+        self.d_weights = np.ones(transformation_shape)
+        self.d_bias = np.ones(transformation_shape[1])
 
     def _cache_gradients(self, batch_points):
         """

@@ -48,7 +48,7 @@ class TestLinearSVM(unittest.TestCase):
         self.train_points -= np.mean(self.train_points, axis=0)
 
         self.layer = LayerFullyConnected(
-            self.train_points.shape[1], self.num_classifications)
+            (self.train_points.shape[1], self.num_classifications))
         self.classifier = LinearSVM(
             (self.train_points.shape[0], self.num_classifications))
 

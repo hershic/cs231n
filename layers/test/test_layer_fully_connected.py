@@ -17,7 +17,7 @@ class TestLayerFullyConnectedTiming(unittest.TestCase):
 
     @allow_failure
     def test_timing(self):
-        layer = LayerFullyConnected(self.point_size, self.num_classes)
+        layer = LayerFullyConnected((self.point_size, self.num_classes))
         time_naive = time_function(layer.forward_naive, self.points)
         time_vectorized = time_function(layer.forward_vectorized, self.points)
         # the vectorized implementation should become increasingly faster as
@@ -47,7 +47,7 @@ class TestLayerFullyConnectedDirected0(unittest.TestCase):
                                 [17, 27, 23]]) + self.bias
         self.labels = np.array([2, 1, 0, 0, 2])
         self.layer = LayerFullyConnected(
-            self.points.shape[1], self.scores.shape[1])
+            (self.points.shape[1], self.scores.shape[1]))
         self.layer.weights = self.weights
         self.layer.bias = self.bias
 
@@ -113,7 +113,7 @@ class TestLayerFullyConnectedDirected1(TestLayerFullyConnectedGradientBase):
         self.weights = np.linspace(-0.2, 0.3, num=weight_size).reshape(np.prod(input_dim), output_dim)
         self.bias = np.linspace(-0.3, 0.1, num=output_dim)
 
-        self.layer = LayerFullyConnected(input_dim, output_dim)
+        self.layer = LayerFullyConnected((input_dim, output_dim))
         self.layer.weights = self.weights
         self.layer.bias = self.bias
         self.scores = np.array([[1.49834967, 1.70660132, 1.91485297],
