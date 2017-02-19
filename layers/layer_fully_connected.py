@@ -21,6 +21,10 @@ class LayerFullyConnected:
         self.d_bias = np.ones((output_dim,))
 
     def _cache_gradients(self, batch_points):
+        """
+        Caches the partial gradients of the batch_points, weights, and bias
+        with respect to the outputs.
+        """
         self.d_batch_points = self.weights
         self.d_weights = batch_points
         self.d_bias = np.ones(self.d_bias.shape)
@@ -36,8 +40,13 @@ class LayerFullyConnected:
 
         Inputs:
         - batch_points: (batch_size, points_per_datum)
+
         Outputs:
         - scores: (num_classifications, batch_size)
+
+        Side-Effects:
+        - Computes and stores the partial gradient of the output with respect
+          to the weights, bias, and inputs.
         """
         self._cache_gradients(batch_points)
 
@@ -59,13 +68,35 @@ class LayerFullyConnected:
 
         Inputs:
         - points: (batch_size, points_per_datum)
+
         Outputs:
         - scores: (num_classifications, batch_size)
+
+        Side-Effects:
+        - Computes and stores the partial gradient of the output with respect
+          to the weights, bias, and inputs.
         """
         self._cache_gradients(batch_points)
         return batch_points.dot(self.weights) + self.bias
 
     def backward_vectorized(self, gradient):
+        """
+        Computes the backward pass of a fully-connected layer with the partial
+        gradient from the subsequent layer and returning the partial gradient
+        with respect to the previous layer's inputs.
+
+        Inputs:
+        - gradient: (batch_size, points_per_datum)
+
+        Outputs:
+        - d_batch_points: (input_dim, output_dim)
+
+        Side-Effects:
+        - Computes and stores the partial gradient of the complete output with
+          respect to the weights, bias, and inputs by using the chain rule
+          against the input gradient from the subsequent layer (and its
+          subsequent layers).
+        """
         self.d_batch_points = gradient.dot(self.d_batch_points.T)
         self.d_weights = self.d_weights.T.dot(gradient)
         self.d_bias = np.sum(self.d_bias * gradient, axis=0)
