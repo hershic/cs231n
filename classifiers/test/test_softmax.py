@@ -1,11 +1,11 @@
 import unittest
 import numpy as np
 
-from classifiers.classifier_softmax import ClassifierSoftmax
-from importers.importer_cifar10 import ImporterCIFAR10
-from layers.layer_fully_connected import LayerFullyConnected
-from partitioners.partitioner_range_split import PartitionerRangeSplit
-from samplers.sampler_random import SamplerRandom
+from classifiers.softmax import ClassifierSoftmax
+from importers.cifar10 import ImporterCIFAR10
+from layers.fully_connected import LayerFullyConnected
+from partitioners.range_split import PartitionerRangeSplit
+from samplers.random import SamplerRandom
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
@@ -14,8 +14,8 @@ cifar10_dir = 'datasets/cifar-10-batches-py'
 
 class TestClassifierSoftmax(unittest.TestCase):
     def setUp(self):
-        self.num_train = 5000
-        self.num_test = 500
+        self.num_train = 500
+        self.num_test = 50
         self.num_validation = 50
         self.num_classifications = 10
 

@@ -1,15 +1,12 @@
 import unittest
 import numpy as np
 
-from classifiers import KNearestNeighbor
-from utils.data import load_CIFAR10
+from classifiers.knn import ClassifierKNearestNeighbor
 from utils.timing import time_function
 
-from partitioners.partitioner_k_folds import PartitionerKFolds
-from samplers.sampler_range_mask import SamplerRangeMask
-from importers.importer_cifar10 import ImporterCIFAR10
-
-from utils.allow_failure import allow_failure
+from partitioners.k_folds import PartitionerKFolds
+from samplers.range_mask import SamplerRangeMask
+from importers.cifar10 import ImporterCIFAR10
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
@@ -35,7 +32,7 @@ class TestKNearestNeighbor(unittest.TestCase):
         self.train_points = np.reshape(train_dataset['points'], (train_dataset['points'].shape[0], -1))
         self.test_points = np.reshape(test_dataset['points'], (test_dataset['points'].shape[0], -1))
 
-        self.classifier = KNearestNeighbor()
+        self.classifier = ClassifierKNearestNeighbor()
         self.classifier.train(self.train_points, self.train_labels)
 
     def test_dist_two_loops(self):
@@ -83,14 +80,13 @@ class TestKNearestNeighbor(unittest.TestCase):
         self.assertAlmostEqual(difference, 0.0)
 
     # Ensure the algorithms are sane
-    @allow_failure
     def test_timing(self):
         two_loop_time = time_function(self.classifier._compute_distances_two_loops, self.test_points)
         one_loop_time = time_function(self.classifier._compute_distances_one_loop, self.test_points)
         no_loop_time = time_function(self.classifier._compute_distances_no_loops, self.test_points)
 
-        # The vectorized no-loops version of the distance computatino should be
+        # The vectorized no-loops version of the distance computation should be
         # about 10x faster than the 1-loop version; the 1-loop version should be of
-        # similar speed (but slightly faster) compared to the 2-loop version
-        self.assertLess(one_loop_time, two_loop_time)
+        # similar speed to the 2-loop version
+        self.assertLess(no_loop_time * 10, two_loop_time)
         self.assertLess(no_loop_time * 10, one_loop_time)

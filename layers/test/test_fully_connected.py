@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from layers.layer_fully_connected import LayerFullyConnected
+from layers.fully_connected import LayerFullyConnected
 from lib.gradient_check import eval_numerical_gradient_array
 from utils.timing import time_function
 

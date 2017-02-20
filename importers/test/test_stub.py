@@ -1,5 +1,5 @@
 import unittest
-from importers.importer_stub import ImporterStub
+from importers.stub import ImporterStub
 
 
 class TestImporterStub(unittest.TestCase):

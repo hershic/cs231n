@@ -1,9 +1,7 @@
 import numpy as np
-from random import shuffle
-from classifiers.linear_classifier import LinearClassifier
 
 
-class LinearSVM(LinearClassifier):
+class ClassifierSVM:
     """ A subclass that uses the Multiclass SVM loss function """
 
     def __init__(self, batch_scores_shape):

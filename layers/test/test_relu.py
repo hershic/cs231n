@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from layers.relu import LayerReLU
-from layers.layer_fully_connected import LayerFullyConnected
+from layers.fully_connected import LayerFullyConnected
 
 from lib.gradient_check import eval_numerical_gradient_array
 from utils.compose import compose
