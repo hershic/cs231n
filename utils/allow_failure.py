@@ -6,6 +6,7 @@ def allow_failure(test):
     def inner(*args, **kwargs):
         try:
             test(*args, **kwargs)
-        except Exception:
+        except Exception as e:
+            print('\n' + str(e))
             raise nose.SkipTest
     return inner

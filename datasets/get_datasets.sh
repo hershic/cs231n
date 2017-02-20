@@ -11,18 +11,20 @@ cd $(readlink -f $(dirname $0))
 
 # Download cifar10
 init() {
-    trap teardown EXIT
-    wget http://www.cs.toronto.edu/~kriz/${cifar10}
+    # trap teardown EXIT
+    if [[ ! -e "./${cifar10}" ]]; then
+        wget http://www.cs.toronto.edu/~kriz/${cifar10}
+    fi
 }
 
 # Remove archived cifar10
 teardown() {
-    rm -f ${cifar10}
+    rm -rf ${cifar10}
 }
 
 # Extract cifar10
 main() {
-    tar -xzf ${cifar10}
+    tar -xzf ${cifar10} --keep-old-files
 }
 
 init
