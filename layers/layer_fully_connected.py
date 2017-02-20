@@ -12,8 +12,11 @@ class LayerFullyConnected:
       e.g. the number of classifications available.
     """
     def __init__(self, transformation_shape):
-        self.weights = np.random.randn(*transformation_shape) * 1e-4
-        self.bias = np.random.randn(transformation_shape[1]) * 1e-4
+        self.weights = np.random.randn(*transformation_shape) * 1e-2
+        # "He" initialization:
+        # https://arxiv.org/abs/1502.01852
+        self.bias = np.random.randn(transformation_shape[1]) \
+                    * np.sqrt(2.0 / transformation_shape[1])
 
         self.d_weights = np.ones(transformation_shape)
         self.d_bias = np.ones(transformation_shape[1])

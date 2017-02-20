@@ -49,6 +49,8 @@ class TestLinearSVM(unittest.TestCase):
 
         self.layer = LayerFullyConnected(
             (self.train_points.shape[1], self.num_classifications))
+        self.layer.bias = np.zeros(self.num_classifications)
+        self.layer.weights = np.zeros((self.train_points.shape[1], self.num_classifications))
         self.classifier = LinearSVM(
             (self.train_points.shape[0], self.num_classifications))
 
