@@ -5,7 +5,7 @@ class ClassifierSoftmax():
     def __init__(self, scores_shape):
         self.gradient = np.zeros(scores_shape)
 
-    def softmax_loss_naive(self, scores, labels):
+    def forward_naive(self, scores, labels):
         """
         Softmax loss function, naive implementation (with loops)
 
@@ -79,7 +79,7 @@ class ClassifierSoftmax():
 
         return loss, self.gradient
 
-    def softmax_loss_vectorized(self, scores, labels):
+    def forward(self, scores, labels):
         """
         Softmax loss function, vectorized version.
 

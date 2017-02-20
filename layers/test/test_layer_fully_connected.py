@@ -19,7 +19,7 @@ class TestLayerFullyConnectedTiming(unittest.TestCase):
     def test_timing(self):
         layer = LayerFullyConnected((self.point_size, self.num_classes))
         time_naive = time_function(layer.forward_naive, self.points)
-        time_vectorized = time_function(layer.forward_vectorized, self.points)
+        time_vectorized = time_function(layer.forward, self.points)
         # the vectorized implementation should become increasingly faster as
         # the data size increases
         self.assertLess(time_vectorized * 5, time_naive)
@@ -56,31 +56,31 @@ class TestLayerFullyConnectedDirected0(unittest.TestCase):
         self.assertTrue(np.array_equal(scores, self.scores))
 
     def test_vectorized_directed(self):
-        scores = self.layer.forward_vectorized(self.points)
+        scores = self.layer.forward(self.points)
         self.assertTrue(np.array_equal(scores, self.scores))
 
     @allow_failure
     def test_timing(self):
         time_naive = time_function(self.layer.forward_naive, self.points)
-        time_vectorized = time_function(self.layer.forward_vectorized, self.points)
+        time_vectorized = time_function(self.layer.forward, self.points)
         self.assertLess(time_vectorized * 2, time_naive)
 
 
 class TestLayerFullyConnectedGradientBase(unittest.TestCase):
     def gradient_batch_points(self, points):
-        return self.layer.forward_vectorized(points)
+        return self.layer.forward(points)
 
     def gradient_bias(self, bias):
         cached_bias = self.layer.bias
         self.layer.bias = bias
-        ret = self.layer.forward_vectorized(self.points)
+        ret = self.layer.forward(self.points)
         self.layer.bias = cached_bias
         return ret
 
     def gradient_weights(self, weights):
         cached_weights = self.layer.weights
         self.layer.weights = weights
-        ret = self.layer.forward_vectorized(self.points)
+        ret = self.layer.forward(self.points)
         self.layer.weights = cached_weights
         return ret
 
@@ -122,23 +122,23 @@ class TestLayerFullyConnectedDirected1(TestLayerFullyConnectedGradientBase):
                                   [3, 3, 3]])
 
     def test_naive(self):
-        scores = self.layer.forward_vectorized(self.points)
+        scores = self.layer.forward(self.points)
         self.assertTrue(np.allclose(scores, self.scores))
 
     def test_vectorized(self):
-        scores = self.layer.forward_vectorized(self.points)
+        scores = self.layer.forward(self.points)
         self.assertTrue(np.allclose(scores, self.scores))
 
     def test_vectorized_gradient(self):
         # only for side-effects
-        _ = self.layer.forward_vectorized(self.points)
+        _ = self.layer.forward(self.points)
 
         numerical_d_batch_points = self.numerical_d_batch_points().copy()
         numerical_d_weights = self.numerical_d_weights().copy()
         numerical_d_bias = self.numerical_d_bias().copy()
 
         # only for side-effects
-        _ = self.layer.backward_vectorized(self.gradient)
+        _ = self.layer.backward(self.gradient)
 
         self.assertTrue(np.allclose(numerical_d_batch_points, self.layer.d_batch_points))
         self.assertTrue(np.allclose(numerical_d_weights, self.layer.d_weights))

@@ -58,7 +58,7 @@ class LayerFullyConnected:
             scores[i] = batch_points[i].dot(self.weights)
         return scores + self.bias
 
-    def forward_vectorized(self, batch_points):
+    def forward(self, batch_points):
         """
         Computes the forward pass of a fully-connected layer with the input
         weights in a vectorized implementation, returning the category scores
@@ -80,7 +80,7 @@ class LayerFullyConnected:
         self._cache_gradients(batch_points)
         return batch_points.dot(self.weights) + self.bias
 
-    def backward_vectorized(self, gradient):
+    def backward(self, gradient):
         """
         Computes the backward pass of a fully-connected layer with the partial
         gradient from the subsequent layer and returning the partial gradient

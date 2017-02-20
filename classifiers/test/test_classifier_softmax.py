@@ -52,10 +52,10 @@ class TestClassifierSoftmax(unittest.TestCase):
         self.classifier = ClassifierSoftmax(
             (self.train_points.shape[0], self.num_classifications))
 
-        self.scores = self.layer.forward_vectorized(self.train_points)
+        self.scores = self.layer.forward(self.train_points)
 
     def testSoftmaxLossNaive(self):
-        loss, grad = self.classifier.softmax_loss_naive(
+        loss, grad = self.classifier.forward_naive(
             self.scores, self.train_labels)
         # Kaparthy says we should expect a probablity around $-\log(0.1) =
         # 2.302$. Check for that here
@@ -63,7 +63,7 @@ class TestClassifierSoftmax(unittest.TestCase):
         self.assertGreater(loss, 2)
 
     def testSoftmaxLossVectorized(self):
-        loss, grad = self.classifier.softmax_loss_vectorized(
+        loss, grad = self.classifier.forward(
             self.scores, self.train_labels)
         # Kaparthy says we should expect a probablity around $-\log(0.1) =
         # 2.302$. Check for that here.
@@ -78,12 +78,12 @@ class TestClassifierSoftmaxDirected0(unittest.TestCase):
         self.classifier = ClassifierSoftmax(self.scores.shape)
 
     def testSoftmaxLossNaive(self):
-        loss, grad = self.classifier.softmax_loss_naive(
+        loss, grad = self.classifier.forward_naive(
             self.scores, self.train_labels)
         self.assertAlmostEqual(loss, 2.04035515)
 
     def testSoftmaxLossVectorized(self):
-        loss, grad = self.classifier.softmax_loss_vectorized(
+        loss, grad = self.classifier.forward(
             self.scores, self.train_labels)
         self.assertAlmostEqual(loss, 2.04035515)
 
@@ -95,12 +95,12 @@ class TestClassifierSoftmaxDirected1(unittest.TestCase):
         self.classifier = ClassifierSoftmax(self.scores.shape)
 
     def testSoftmaxLossNaive(self):
-        loss, grad = self.classifier.softmax_loss_naive(
+        loss, grad = self.classifier.forward_naive(
             self.scores, self.train_labels)
         self.assertAlmostEqual(loss, 1.04019057)
 
     def testSoftmaxLossVectorized(self):
-        loss, grad = self.classifier.softmax_loss_vectorized(
+        loss, grad = self.classifier.forward(
             self.scores, self.train_labels)
         self.assertAlmostEqual(loss, 1.04019057)
 
@@ -113,12 +113,12 @@ class TestClassifierSoftmaxDirected2(unittest.TestCase):
         self.classifier = ClassifierSoftmax(self.scores.shape)
 
     def testSoftmaxLossNaive(self):
-        loss, grad = self.classifier.softmax_loss_naive(
+        loss, grad = self.classifier.forward_naive(
             self.scores, self.train_labels)
         self.assertAlmostEqual(loss, (1.04019057 + 2.04035515) / 2)
 
     def testSoftmaxLossVectorized(self):
-        loss, grad = self.classifier.softmax_loss_vectorized(
+        loss, grad = self.classifier.forward(
             self.scores, self.train_labels)
         self.assertAlmostEqual(loss, (1.04019057 + 2.04035515) / 2)
 
@@ -131,12 +131,12 @@ class TestClassifierSoftmaxGradient(unittest.TestCase):
         self.classifier = ClassifierSoftmax(self.scores.shape)
 
     def testGradientNaive(self):
-        (loss, gradient) = self.classifier.softmax_loss_naive(
+        (loss, gradient) = self.classifier.forward_naive(
             self.scores, self.labels)
         self.gradientCheck(loss, gradient)
 
     def testGradientVectorized(self):
-        (loss, gradient) = self.classifier.softmax_loss_vectorized(
+        (loss, gradient) = self.classifier.forward(
             self.scores, self.labels)
         self.gradientCheck(loss, gradient)
 
@@ -149,7 +149,7 @@ class TestClassifierSoftmaxGradient(unittest.TestCase):
         for row in range(self.scores.shape[0]):
             for col in range(self.scores.shape[1]):
                 self.scores[row, col] += h
-                (loss, _) = self.classifier.softmax_loss_naive(
+                (loss, _) = self.classifier.forward_naive(
                     self.scores, self.labels)
                 grad = (loss - lossOriginal) / h
                 numericalGradient[row, col] = grad

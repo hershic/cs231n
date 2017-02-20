@@ -44,8 +44,8 @@ class TestLayerFullyConnectedWithLayerReLU(unittest.TestCase):
         self.layer1 = LayerReLU()
 
     def testGradientsFullyConnectedWithReLU(self):
-        run_layers_forward = compose(self.layer0.forward_vectorized, self.layer1.forward)
-        run_layers_backward = compose(self.layer1.backward, self.layer0.backward_vectorized)
+        run_layers_forward = compose(self.layer0.forward, self.layer1.forward)
+        run_layers_backward = compose(self.layer1.backward, self.layer0.backward)
 
         # for side-effects
         _ = run_layers_forward(self.forward_input)
