@@ -5,7 +5,22 @@ class ClassifierSoftmax():
     def __init__(self, scores_shape):
         self.gradient = np.zeros(scores_shape)
 
-    def forward_naive(self, scores, labels):
+    def set_batch_labels(self, batch_labels):
+        """
+        Set the classification labels for this batch. This is necessary to obtain a proper score.
+
+        Inputs:
+        - batch_labels: The labels corresponding to the current batch.
+
+        Outputs:
+        - none
+
+        Side-Effects:
+        - Stores the input batch_labels locally
+        """
+        self.batch_labels = batch_labels
+
+    def forward_naive(self, scores):
         """
         Softmax loss function, naive implementation (with loops)
 
@@ -17,9 +32,12 @@ class ClassifierSoftmax():
         - labels: A numpy array of shape (N,) containing training labels; labels[i] = c
             means that scores[i] has label c, where 0 <= c < number of labels in scores.
 
-        Returns a tuple of:
+        Outputs:
         - loss as single float
-        - gradient with respect to the scores, same shape as the scores (N, D)
+
+        Side-Effects:
+        - Computes and stores the partial gradient of the output with respect
+          to the input scores
         """
         # Initialize the loss and gradient to zero.
         loss = 0.0
@@ -59,7 +77,7 @@ class ClassifierSoftmax():
         # The naive calculation is below. We store the gradient in self.
         for i in range(num_points):
             for j in range(num_classes):
-                if j == labels[i]:
+                if j == self.batch_labels[i]:
                     # this is really bad because subtraction allows for
                     # numerical instability and dropoff, but it's good enough
                     # for a naive approach
@@ -74,12 +92,12 @@ class ClassifierSoftmax():
                 local_scores[i, j] /= scores_sum[i]
 
         # Finally, we obtain our final loss.
-        correct_classification_indices = (np.arange(num_points), labels)
+        correct_classification_indices = (np.arange(num_points), self.batch_labels)
         loss = np.sum(-1 * np.log(local_scores[correct_classification_indices])) / num_points
 
-        return loss, self.gradient
+        return loss
 
-    def forward(self, scores, labels):
+    def forward(self, scores):
         """
         Softmax loss function, vectorized version.
 
@@ -91,9 +109,12 @@ class ClassifierSoftmax():
         - labels: A numpy array of shape (N,) containing training labels; labels[i] = c
             means that scores[i] has label c, where 0 <= c < number of labels in scores.
 
-        Returns a tuple of:
+        Outputs:
         - loss as single float
-        - gradient with respect to the scores, same shape as the scores (N, D)
+
+        Side-Effects:
+        - Computes and stores the partial gradient of the output with respect
+          to the input scores
         """
         # Initialize the loss to zero.
         loss = 0.0
@@ -121,7 +142,7 @@ class ClassifierSoftmax():
 
         # Third normalize the scores. Both the gradient general case ($j \ne
         # y_i$) and the loss depends on the normalized scores.
-        correct_classification_indices = (np.arange(num_points), labels)
+        correct_classification_indices = (np.arange(num_points), self.batch_labels)
         normalized_scores = (local_scores.T / scores_sum).T
         loss = np.sum(-1 * np.log(normalized_scores[correct_classification_indices])) / num_points
 
@@ -154,4 +175,16 @@ class ClassifierSoftmax():
             -1 * np.sum(noncorrect_classification_index_mask * local_scores) / scores_sum
 
         # All done!
-        return loss, self.gradient
+        return loss
+
+    def backward(self, gradient=1):
+        """
+        Computes the backward pass of the Softmax classifier with the partial
+        gradient from the subsequent layer and returning the partial gradient
+        with respect to the previous layer's inputs.
+
+        Inputs:
+        - gradient: ignored, but exists for API consistency
+        """
+
+        return self.gradient
