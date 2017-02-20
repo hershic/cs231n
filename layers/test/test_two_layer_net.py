@@ -68,5 +68,12 @@ class TestTwoLayerNet(unittest.TestCase):
               14.81149128, 15.49994135, 16.18839143],
              [12.58373087, 13.20054771, 13.81736455, 14.43418138,
               15.05099822, 15.66781506, 16.2846319]])
+
+        forward = compose(self.layer0.forward, self.layer0_activations.forward,
+                          self.layer1.forward, self.layer1_activations.forward)
+
         scores = forward(self.forward_input)
         self.assertTrue(np.allclose(scores, correct_scores))
+
+        self.classifier.set_batch_labels(np.array([0, 5, 1]))
+        self.assertAlmostEqual(self.forward(self.forward_input), 3.4702243556)
