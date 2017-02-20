@@ -46,9 +46,9 @@ class TestClassifierSoftmax(unittest.TestCase):
         self.train_points -= np.mean(self.train_points, axis=0)
 
         self.layer = LayerFullyConnected(
-            self.train_points.shape[1], self.num_classifications)
+            (self.train_points.shape[1], self.num_classifications))
         self.classifier = ClassifierSoftmax(
-            (self.num_classifications, self.train_points.shape[0]))
+            (self.train_points.shape[0], self.num_classifications))
 
         self.scores = self.layer.forward_vectorized(self.train_points)
 
@@ -64,14 +64,14 @@ class TestClassifierSoftmax(unittest.TestCase):
         loss, grad = self.classifier.softmax_loss_vectorized(
             self.scores, self.train_labels)
         # Kaparthy says we should expect a probablity around $-\log(0.1) =
-        # 2.302$. Check for that here
+        # 2.302$. Check for that here.
         self.assertLess(loss, 2.5)
         self.assertGreater(loss, 2)
 
 
 class TestClassifierSoftmaxDirected0(unittest.TestCase):
     def setUp(self):
-        self.scores = np.array([[3.2], [5.1], [-1.7]])
+        self.scores = np.array([[3.2, 5.1, -1.7]])
         self.train_labels = np.array([0])
         self.classifier = ClassifierSoftmax(self.scores.shape)
 
@@ -88,7 +88,7 @@ class TestClassifierSoftmaxDirected0(unittest.TestCase):
 
 class TestClassifierSoftmaxDirected1(unittest.TestCase):
     def setUp(self):
-        self.scores = np.array([[-2.85000], [0.86000], [0.28000]])
+        self.scores = np.array([[-2.85000, 0.86000, 0.28000]])
         self.train_labels = np.array([2])
         self.classifier = ClassifierSoftmax(self.scores.shape)
 
@@ -105,7 +105,8 @@ class TestClassifierSoftmaxDirected1(unittest.TestCase):
 
 class TestClassifierSoftmaxDirected2(unittest.TestCase):
     def setUp(self):
-        self.scores = np.array([[-2.85000, 3.2], [0.86000, 5.1], [0.28000, -1.7]])
+        self.scores = np.array([[-2.85, 0.86, 0.28],
+                                [3.2, 5.1, -1.7]])
         self.train_labels = np.array([2, 0])
         self.classifier = ClassifierSoftmax(self.scores.shape)
 
@@ -123,7 +124,7 @@ class TestClassifierSoftmaxDirected2(unittest.TestCase):
 class TestClassifierSoftmaxGradient(unittest.TestCase):
     def setUp(self):
         self.points = np.array([[1, 3, 2, 1]], dtype=float)
-        self.scores = np.array([[15], [21], [14]], dtype=float)
+        self.scores = np.array([[15, 21, 14]], dtype=float)
         self.labels = np.array([2])
         self.classifier = ClassifierSoftmax(self.scores.shape)
 

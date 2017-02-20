@@ -1,7 +1,7 @@
 import numpy as np
 from random import randrange
 
-def eval_numerical_gradient(f, x, verbose=True, h=0.00001):
+def eval_numerical_gradient(f, x, verbose=False, h=0.00001):
   """
   a naive implementation of numerical gradient of f at x
   - f should be a function that takes a single argument
@@ -48,7 +48,6 @@ def eval_numerical_gradient_array(f, x, df, h=1e-5):
     x[ix] = oldval - h
     neg = f(x).copy()
     x[ix] = oldval
-
     grad[ix] = np.sum((pos - neg) * df) / (2 * h)
     it.iternext()
   return grad

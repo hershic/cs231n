@@ -7,15 +7,25 @@ class LayerFullyConnected:
     connected to each output score with some weight.
 
     Inputs:
-    - num_inputs: The number of input points in each dataset point, i.e. the
-        number of pixels in an input image. (points_per_datum,)
-    - num_outputs: The number of output activation points the network should
-        return, i.e. the number of classifications available.
-        (num_classifications,)
+    - transformation_shape: The shape of the transformation between input
+      points, e.g. the number of pixels in an input image and output points,
+      e.g. the number of classifications available.
     """
-    def __init__(self, num_inputs, num_outputs):
-        self.weights = np.random.randn(num_outputs, num_inputs) * 1e-4
-        self.gradient = np.zeros((num_outputs, num_inputs))
+    def __init__(self, transformation_shape):
+        self.weights = np.random.randn(*transformation_shape) * 1e-4
+        self.bias = np.random.randn(transformation_shape[1]) * 1e-4
+
+        self.d_weights = np.ones(transformation_shape)
+        self.d_bias = np.ones(transformation_shape[1])
+
+    def _cache_gradients(self, batch_points):
+        """
+        Caches the partial gradients of the batch_points, weights, and bias
+        with respect to the outputs.
+        """
+        self.d_batch_points = self.weights
+        self.d_weights = batch_points
+        self.d_bias = np.ones(self.d_bias.shape)
 
     def forward_naive(self, batch_points):
         """
@@ -28,15 +38,22 @@ class LayerFullyConnected:
 
         Inputs:
         - batch_points: (batch_size, points_per_datum)
+
         Outputs:
         - scores: (num_classifications, batch_size)
+
+        Side-Effects:
+        - Computes and stores the partial gradient of the output with respect
+          to the weights, bias, and inputs.
         """
-        num_outputs = self.weights.shape[0]
-        num_inputs = batch_points.shape[0]
-        scores = np.zeros((num_inputs, num_outputs))
-        for i in range(num_inputs):
-            scores[i] = self.weights.dot(batch_points[i])
-        return scores.T
+        self._cache_gradients(batch_points)
+
+        batch_size = batch_points.shape[0]
+        num_outputs = self.weights.shape[1]
+        scores = np.zeros((batch_size, num_outputs))
+        for i in range(batch_size):
+            scores[i] = batch_points[i].dot(self.weights)
+        return scores + self.bias
 
     def forward_vectorized(self, batch_points):
         """
@@ -49,9 +66,36 @@ class LayerFullyConnected:
 
         Inputs:
         - points: (batch_size, points_per_datum)
+
         Outputs:
         - scores: (num_classifications, batch_size)
+
+        Side-Effects:
+        - Computes and stores the partial gradient of the output with respect
+          to the weights, bias, and inputs.
         """
-        # TODO obtain and cache the gradient
-        self.gradient = self.weights
-        return self.weights.dot(batch_points.T)
+        self._cache_gradients(batch_points)
+        return batch_points.dot(self.weights) + self.bias
+
+    def backward_vectorized(self, gradient):
+        """
+        Computes the backward pass of a fully-connected layer with the partial
+        gradient from the subsequent layer and returning the partial gradient
+        with respect to the previous layer's inputs.
+
+        Inputs:
+        - gradient: (batch_size, points_per_datum)
+
+        Outputs:
+        - d_batch_points: (input_dim, output_dim)
+
+        Side-Effects:
+        - Computes and stores the partial gradient of the complete output with
+          respect to the weights, bias, and inputs by using the chain rule
+          against the input gradient from the subsequent layer (and its
+          subsequent layers).
+        """
+        self.d_batch_points = gradient.dot(self.d_batch_points.T)
+        self.d_weights = self.d_weights.T.dot(gradient)
+        self.d_bias = np.sum(self.d_bias * gradient, axis=0)
+        return self.d_batch_points
