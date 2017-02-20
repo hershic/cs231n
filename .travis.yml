@@ -8,4 +8,4 @@ install:
   - ./datasets/get_datasets.sh
 
 script:
-  - nosetests
+  - nosetests --show-skipped
