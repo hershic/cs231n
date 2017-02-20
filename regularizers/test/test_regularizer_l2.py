@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from regularizers.regularizer_l2 import RegularizerL2
+from regularizers.l2 import RegularizerL2
 
 
 class TestRegularizerL2Directed(unittest.TestCase):

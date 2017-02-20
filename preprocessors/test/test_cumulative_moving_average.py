@@ -1,10 +1,10 @@
 import unittest
 import numpy as np
 
-from importers.importer_cifar10 import ImporterCIFAR10
-from partitioners.partitioner_range_split import PartitionerRangeSplit
-from samplers.sampler_random import SamplerRandom
-from preprocessors.preprocessor_cumulative_moving_average import PreprocessorCumulativeMovingAverage
+from importers.cifar10 import ImporterCIFAR10
+from partitioners.range_split import PartitionerRangeSplit
+from samplers.random import SamplerRandom
+from preprocessors.cumulative_moving_average import PreprocessorCumulativeMovingAverage
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 

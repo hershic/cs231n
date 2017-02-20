@@ -1,15 +1,13 @@
 import numpy as np
-from random import shuffle
-from classifiers.linear_classifier import LinearClassifier
 
 
-class LinearSVM(LinearClassifier):
+class ClassifierSVM:
     """ A subclass that uses the Multiclass SVM loss function """
 
     def __init__(self, batch_scores_shape):
         self.gradient = np.zeros(batch_scores_shape)
 
-    def svm_loss_naive(self, batch_scores, batch_labels):
+    def forward_naive(self, batch_scores, batch_labels):
         """
         Structured SVM loss function, naive implementation (with loops).
 
@@ -50,7 +48,7 @@ class LinearSVM(LinearClassifier):
 
         return loss, self.gradient
 
-    def svm_loss_vectorized(self, batch_scores, batch_labels):
+    def forward(self, batch_scores, batch_labels):
         """
         Structured SVM loss function, vectorized implementation.
 

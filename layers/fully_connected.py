@@ -12,8 +12,11 @@ class LayerFullyConnected:
       e.g. the number of classifications available.
     """
     def __init__(self, transformation_shape):
-        self.weights = np.random.randn(*transformation_shape) * 1e-4
-        self.bias = np.random.randn(transformation_shape[1]) * 1e-4
+        self.weights = np.random.randn(*transformation_shape) * 1e-2
+        # "He" initialization:
+        # https://arxiv.org/abs/1502.01852
+        self.bias = np.random.randn(transformation_shape[1]) \
+                    * np.sqrt(2.0 / transformation_shape[1])
 
         self.d_weights = np.ones(transformation_shape)
         self.d_bias = np.ones(transformation_shape[1])
@@ -55,7 +58,7 @@ class LayerFullyConnected:
             scores[i] = batch_points[i].dot(self.weights)
         return scores + self.bias
 
-    def forward_vectorized(self, batch_points):
+    def forward(self, batch_points):
         """
         Computes the forward pass of a fully-connected layer with the input
         weights in a vectorized implementation, returning the category scores
@@ -77,7 +80,7 @@ class LayerFullyConnected:
         self._cache_gradients(batch_points)
         return batch_points.dot(self.weights) + self.bias
 
-    def backward_vectorized(self, gradient):
+    def backward(self, gradient):
         """
         Computes the backward pass of a fully-connected layer with the partial
         gradient from the subsequent layer and returning the partial gradient
