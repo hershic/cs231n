@@ -4,6 +4,7 @@ import numpy as np
 from classifiers.softmax import ClassifierSoftmax
 from layers.relu import LayerReLU
 from layers.fully_connected import LayerFullyConnected
+from regularizers.l2 import RegularizerL2
 
 from lib.gradient_check import eval_numerical_gradient_array
 from utils.compose import compose
@@ -27,6 +28,10 @@ class TestTwoLayerNet(unittest.TestCase):
         self.layer1 = LayerFullyConnected((self.hidden_layer_size, self.num_classifications))
         self.layer1_activations = LayerReLU()
         self.classifier = ClassifierSoftmax((self.num_points, self.num_classifications))
+
+        self.regularizer = RegularizerL2()
+        self.regularizer.addLayer(self.layer0)
+        self.regularizer.addLayer(self.layer1)
 
         self.forward = compose(self.layer0.forward, self.layer0_activations.forward,
                                self.layer1.forward, self.layer1_activations.forward,
@@ -77,3 +82,7 @@ class TestTwoLayerNet(unittest.TestCase):
 
         self.classifier.set_batch_labels(np.array([0, 5, 1]))
         self.assertAlmostEqual(self.forward(self.forward_input), 3.4702243556)
+
+        self.assertAlmostEqual(26.5948426952,
+                               self.forward(self.forward_input)
+                               + self.regularizer.calculate())
