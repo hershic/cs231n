@@ -31,12 +31,11 @@ class TestTwoLayerNet(unittest.TestCase):
         self.forward = compose(self.layer0.forward, self.layer0_activations.forward,
                                self.layer1.forward, self.layer1_activations.forward,
                                self.classifier.forward)
-
         self.backward = compose(self.classifier.backward,
                                 self.layer1_activations.backward, self.layer1.backward,
                                 self.layer0_activations.backward, self.layer0.backward)
 
-        self.classifier.labels = self.forward_classifications
+        self.classifier.set_batch_labels(self.forward_classifications)
 
     def test_initialization(self):
         standard_deviation = 1e-2
@@ -61,9 +60,6 @@ class TestTwoLayerNet(unittest.TestCase):
             -5.5, 4.5, num=self.num_points * self.point_size) \
             .reshape(self.point_size, self.num_points) \
             .T
-
-        forward = compose(self.layer0.forward, self.layer0_activations.forward,
-                          self.layer1.forward, self.layer1_activations.forward)
 
         correct_scores = np.asarray(
             [[11.53165108, 12.2917344, 13.05181771, 13.81190102,
