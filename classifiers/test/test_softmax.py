@@ -14,7 +14,23 @@ cifar10_dir = 'datasets/cifar-10-batches-py'
 # TODO: clean this up! There's so much duplicated code below...
 
 
-class TestClassifierSoftmax(unittest.TestCase):
+class ClassifierSoftmaxGradientTest():
+    def testGradientNaive(self):
+        self.classifier.forward_naive(self.scores)
+        analyticGradient = self.classifier.gradient.copy()
+        numericalGradient = eval_numerical_gradient(
+            lambda x: self.classifier.forward(x), self.scores)
+        self.assertTrue(np.allclose(numericalGradient, analyticGradient))
+
+    def testGradientVectorized(self):
+        self.classifier.forward(self.scores)
+        analyticGradient = self.classifier.gradient.copy()
+        numericalGradient = eval_numerical_gradient(
+            lambda x: self.classifier.forward(x), self.scores)
+        self.assertTrue(np.allclose(numericalGradient, analyticGradient))
+
+
+class TestClassifierSoftmax(unittest.TestCase, ClassifierSoftmaxGradientTest):
     def setUp(self):
         self.num_train = 500
         self.num_test = 50
@@ -72,7 +88,7 @@ class TestClassifierSoftmax(unittest.TestCase):
         self.assertGreater(loss, 2)
 
 
-class TestClassifierSoftmaxDirected0(unittest.TestCase):
+class TestClassifierSoftmaxDirected0(unittest.TestCase, ClassifierSoftmaxGradientTest):
     def setUp(self):
         self.scores = np.array([[3.2, 5.1, -1.7]])
         self.train_labels = np.array([0])
@@ -88,7 +104,7 @@ class TestClassifierSoftmaxDirected0(unittest.TestCase):
         self.assertAlmostEqual(loss, 2.04035515)
 
 
-class TestClassifierSoftmaxDirected1(unittest.TestCase):
+class TestClassifierSoftmaxDirected1(unittest.TestCase, ClassifierSoftmaxGradientTest):
     def setUp(self):
         self.scores = np.array([[-2.85000, 0.86000, 0.28000]])
         self.train_labels = np.array([2])
@@ -104,7 +120,7 @@ class TestClassifierSoftmaxDirected1(unittest.TestCase):
         self.assertAlmostEqual(loss, 1.04019057)
 
 
-class TestClassifierSoftmaxDirected2(unittest.TestCase):
+class TestClassifierSoftmaxDirected2(unittest.TestCase, ClassifierSoftmaxGradientTest):
     def setUp(self):
         self.scores = np.array([[-2.85, 0.86, 0.28],
                                 [3.2, 5.1, -1.7]])
@@ -121,23 +137,9 @@ class TestClassifierSoftmaxDirected2(unittest.TestCase):
         self.assertAlmostEqual(loss, (1.04019057 + 2.04035515) / 2)
 
 
-class TestClassifierSoftmaxGradient(unittest.TestCase):
+class TestClassifierSoftmaxDirected3(unittest.TestCase, ClassifierSoftmaxGradientTest):
     def setUp(self):
         self.scores = np.array([[15, 21, 14], [5, 2, 4]], dtype=float)
         self.labels = np.array([2, 1])
         self.classifier = ClassifierSoftmax(self.scores.shape)
         self.classifier.set_batch_labels(self.labels)
-
-    def testGradientNaive(self):
-        self.classifier.forward_naive(self.scores)
-        analyticGradient = self.classifier.gradient.copy()
-        numericalGradient = eval_numerical_gradient(
-            lambda x: self.classifier.forward(x), self.scores)
-        self.assertTrue(np.allclose(numericalGradient, analyticGradient))
-
-    def testGradientVectorized(self):
-        self.classifier.forward(self.scores)
-        analyticGradient = self.classifier.gradient.copy()
-        numericalGradient = eval_numerical_gradient(
-            lambda x: self.classifier.forward(x), self.scores)
-        self.assertTrue(np.allclose(numericalGradient, analyticGradient))
