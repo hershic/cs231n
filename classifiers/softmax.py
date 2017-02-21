@@ -85,6 +85,8 @@ class ClassifierSoftmax():
                 else:
                     self.gradient[i, j] = local_scores[i, j] / scores_sum[i]
 
+        self.gradient /= scores.shape[0]
+
         # Third we normalize each parameter with respect to the other
         # parameters.
         for i in range(num_points):
@@ -172,9 +174,9 @@ class ClassifierSoftmax():
         noncorrect_classification_index_mask = np.ones(local_scores.shape)
         noncorrect_classification_index_mask[correct_classification_indices] = 0
         self.gradient[correct_classification_indices] = \
-            -1 * np.sum(noncorrect_classification_index_mask * local_scores) / scores_sum
+            -np.sum(noncorrect_classification_index_mask * local_scores, axis=1) / scores_sum
+        self.gradient /= scores.shape[0]
 
-        # All done!
         return loss
 
     def backward(self, gradient=1):

@@ -7,6 +7,8 @@ from layers.fully_connected import LayerFullyConnected
 from partitioners.range_split import PartitionerRangeSplit
 from samplers.random import SamplerRandom
 
+from lib.gradient_check import eval_numerical_gradient
+
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
 # TODO: clean this up! There's so much duplicated code below...
@@ -121,31 +123,21 @@ class TestClassifierSoftmaxDirected2(unittest.TestCase):
 
 class TestClassifierSoftmaxGradient(unittest.TestCase):
     def setUp(self):
-        self.points = np.array([[1, 3, 2, 1]], dtype=float)
-        self.scores = np.array([[15, 21, 14]], dtype=float)
-        self.labels = np.array([2])
+        self.scores = np.array([[15, 21, 14], [5, 2, 4]], dtype=float)
+        self.labels = np.array([2, 1])
         self.classifier = ClassifierSoftmax(self.scores.shape)
         self.classifier.set_batch_labels(self.labels)
 
     def testGradientNaive(self):
-        loss = self.classifier.forward_naive(self.scores)
-        self.gradientCheck(loss, self.classifier.gradient)
+        self.classifier.forward_naive(self.scores)
+        analyticGradient = self.classifier.gradient.copy()
+        numericalGradient = eval_numerical_gradient(
+            lambda x: self.classifier.forward(x), self.scores)
+        self.assertTrue(np.allclose(numericalGradient, analyticGradient))
 
     def testGradientVectorized(self):
-        loss = self.classifier.forward(self.scores)
-        self.gradientCheck(loss, self.classifier.gradient)
-
-    def gradientCheck(self, lossOriginal, analyticGradient):
-        # preserve the gradient
-        analyticGradient = np.array(analyticGradient, copy=True)
-        h = 1e-5
-
-        numericalGradient = np.zeros(analyticGradient.shape)
-        for row in range(self.scores.shape[0]):
-            for col in range(self.scores.shape[1]):
-                self.scores[row, col] += h
-                loss = self.classifier.forward_naive(self.scores)
-                grad = (loss - lossOriginal) / h
-                numericalGradient[row, col] = grad
-                self.scores[row, col] -= h
-        self.assertTrue(np.all(np.isclose(numericalGradient, analyticGradient)))
+        self.classifier.forward(self.scores)
+        analyticGradient = self.classifier.gradient.copy()
+        numericalGradient = eval_numerical_gradient(
+            lambda x: self.classifier.forward(x), self.scores)
+        self.assertTrue(np.allclose(numericalGradient, analyticGradient))
