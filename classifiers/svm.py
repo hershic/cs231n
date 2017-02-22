@@ -7,7 +7,22 @@ class ClassifierSVM:
     def __init__(self, batch_scores_shape):
         self.gradient = np.zeros(batch_scores_shape)
 
-    def forward_naive(self, batch_scores, batch_labels):
+    def set_batch_labels(self, batch_labels):
+        """
+        Set the classification labels for this batch. This is necessary to obtain a proper score.
+
+        Inputs:
+        - batch_labels: The labels corresponding to the current batch.
+
+        Outputs:
+        - none
+
+        Side-Effects:
+        - Stores the input batch_labels locally
+        """
+        self.batch_labels = batch_labels
+
+    def forward_naive(self, batch_scores):
         """
         Structured SVM loss function, naive implementation (with loops).
 
@@ -18,10 +33,12 @@ class ClassifierSVM:
             batch_labels; batch_labels[i] = c means that batch_scores[i] has
             label c, where 0 <= c < number of batch_labels in batch_scores.
 
-        Returns a tuple of:
+        Outputs:
         - loss as single float
-        - gradient with respect to batch_scores in the same shape as
-            batch_scores
+
+        Side-Effects:
+        - Computes and stores the partial derivatives of the output with
+          respect to batch_scores in the same shape as batch_scores
         """
 
         # compute the loss and the gradient
@@ -29,9 +46,9 @@ class ClassifierSVM:
         num_classes = batch_scores.shape[1]
         loss = 0.0
         for i in range(num_points):
-            correct_class_score = batch_scores[i, batch_labels[i]]
+            correct_class_score = batch_scores[i, self.batch_labels[i]]
             for j in range(num_classes):
-                if j == batch_labels[i]:
+                if j == self.batch_labels[i]:
                     self.gradient[i, j] = -1 * num_classes + 1
                     continue
                 # note delta = 1
@@ -46,9 +63,9 @@ class ClassifierSVM:
         # to be an average instead so we divide by num_train.
         loss /= num_points
 
-        return loss, self.gradient
+        return loss
 
-    def forward(self, batch_scores, batch_labels):
+    def forward(self, batch_scores):
         """
         Structured SVM loss function, vectorized implementation.
 
@@ -59,14 +76,16 @@ class ClassifierSVM:
             batch_labels; batch_labels[i] = c means that batch_scores[i] has
             label c, where 0 <= c < number of batch_labels in batch_scores.
 
-        Returns a tuple of:
+        Outputs:
         - loss as single float
-        - gradient with respect to batch_scores in the same shape as
-          batch_scores
+
+        Side-Effects:
+        - Computes and stores the partial derivatives of the output with
+          respect to batch_scores in the same shape as batch_scores
         """
 
-        num_points = batch_labels.shape[0]
-        correct_classification_indices = (np.arange(num_points), batch_labels)
+        num_points = self.batch_labels.shape[0]
+        correct_classification_indices = (np.arange(num_points), self.batch_labels)
         correct_classifications = batch_scores[correct_classification_indices]
         local_batch_scores = (batch_scores.T + 1 - correct_classifications).T
         local_batch_scores = np.maximum(local_batch_scores, 0)
@@ -78,4 +97,4 @@ class ClassifierSVM:
         self.gradient[correct_classification_indices] = \
             -1 * np.sum(self.gradient, axis=1)
 
-        return loss, self.gradient
+        return loss

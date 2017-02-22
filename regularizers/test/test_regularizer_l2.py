@@ -13,7 +13,7 @@ class TestRegularizerL2Directed(unittest.TestCase):
                                  [2, 4, 2, 3],
                                  [3, 1, 2, 4]])
         self.regularizer.addLayer(self)
-        self.assertAlmostEqual(self.regularizer.calculate(), 81.0)
+        self.assertAlmostEqual(self.regularizer.calculate(), 40.5)
 
     def testRegularizerPrefersL2(self):
         self.regularizer.addLayer(self)

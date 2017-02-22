@@ -53,29 +53,24 @@ class TestLinearSVM(unittest.TestCase):
         self.layer.weights = np.zeros((self.train_points.shape[1], self.num_classifications))
         self.classifier = ClassifierSVM(
             (self.train_points.shape[0], self.num_classifications))
-
+        self.classifier.set_batch_labels(self.train_labels)
         self.scores = self.layer.forward(self.train_points)
 
     def testSVMLossNaive(self):
-        loss, grad = self.classifier.forward_naive(
-            self.scores, self.train_labels)
+        loss = self.classifier.forward_naive(self.scores)
         self.assertLess(loss, 10)
         self.assertGreater(loss, 8)
+        self.classifier.set_batch_labels(self.train_labels)
 
     def testSVMLossVectorized(self):
-        loss, grad = self.classifier.forward(
-            self.scores, self.train_labels)
+        loss = self.classifier.forward(self.scores)
         self.assertLess(loss, 10)
         self.assertGreater(loss, 8)
 
     @allow_failure
     def testTiming(self):
-        naive_time = time_function(
-            self.classifier.forward_naive,
-            self.scores, self.train_labels)
-        vectorized_time = time_function(
-            self.classifier.forward,
-            self.scores, self.train_labels)
+        naive_time = time_function(self.classifier.forward_naive, self.scores)
+        vectorized_time = time_function(self.classifier.forward, self.scores)
         self.assertLess(vectorized_time * 10, naive_time)
 
 
@@ -96,10 +91,10 @@ class TestLinearSVMDirected0(unittest.TestCase):
                                 [17, 27, 23]])
         self.labels = np.array([2, 1, 0, 0, 2])
         self.classifier = ClassifierSVM(self.scores.shape)
+        self.classifier.set_batch_labels(self.labels)
 
     def testSVMLossVectorized(self):
-        (loss, gradient) = self.classifier.forward(
-            self.scores, self.labels)
+        loss = self.classifier.forward(self.scores)
         self.assertAlmostEqual(loss, 6.4)
 
 
@@ -110,10 +105,10 @@ class TestLinearSVMDirected1(unittest.TestCase):
                                 [2.2, 2.5, -3.1]])
         self.labels = np.array([0, 1, 2])
         self.classifier = ClassifierSVM(self.scores.shape)
+        self.classifier.set_batch_labels(self.labels)
 
     def testSVMLossVectorized(self):
-        (loss, gradient) = self.classifier.forward(
-            self.scores, self.labels)
+        loss = self.classifier.forward(self.scores)
         self.assertAlmostEqual(loss, 5.2666666666666657)
 
 
@@ -124,21 +119,18 @@ class TestLinearSVMGradient(unittest.TestCase):
         self.gradient = np.array([[1, 1, -2]], dtype=float)
         self.labels = np.array([2])
         self.classifier = ClassifierSVM(self.scores.shape)
+        self.classifier.set_batch_labels(self.labels)
 
     def testGradientVectorized(self):
-        (lossOriginal, analyticGradient) = self.classifier.forward(
-            self.scores, self.labels)
-        analyticGradient = analyticGradient.copy()
+        self.classifier.forward(self.scores)
+        analyticGradient = self.classifier.gradient.copy()
         numericalGradient = eval_numerical_gradient(
-            lambda scores: self.classifier.forward(scores, self.labels)[0],
-            self.scores)
+            lambda scores: self.classifier.forward(scores), self.scores)
         self.assertTrue(np.all(np.isclose(numericalGradient, analyticGradient)))
 
     def testGradientNaive(self):
-        (lossOriginal, analyticGradient) = self.classifier.forward_naive(
-            self.scores, self.labels)
-        analyticGradient = analyticGradient.copy()
+        self.classifier.forward_naive(self.scores)
+        analyticGradient = self.classifier.gradient.copy()
         numericalGradient = eval_numerical_gradient(
-            lambda scores: self.classifier.forward_naive(scores, self.labels)[0],
-            self.scores)
+            lambda scores: self.classifier.forward_naive(scores), self.scores)
         self.assertTrue(np.all(np.isclose(numericalGradient, analyticGradient)))

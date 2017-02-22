@@ -11,5 +11,5 @@ class RegularizerL2():
     def calculate(self):
         regularization = 0.0
         for layer in self.layers:
-            regularization += np.sum(layer.weights * layer.weights)
+            regularization += 0.5 * np.sum(layer.weights * layer.weights)
         return regularization
