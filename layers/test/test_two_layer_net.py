@@ -12,7 +12,10 @@ from utils.compose import compose
 
 class TestTwoLayerNetFixture(unittest.TestCase):
     def initConstants(self):
-        pass
+        self.num_points = 3
+        self.point_size = 5
+        self.num_classifications = 7
+        self.hidden_layer_size = 50
 
     def initNetwork(self):
         self.forward_input = np.random.randn(self.num_points, self.point_size)
@@ -60,13 +63,6 @@ class TwoLayerNetGradientTest:
 
 
 class TestTwoLayerNetDirected0(TestTwoLayerNetFixture, TwoLayerNetGradientTest):
-    def initConstants(self):
-        self.num_points = 3
-        self.point_size = 5
-        self.num_classifications = 7
-        # self.hidden_layer_size = 50
-        self.hidden_layer_size = 5
-
     def initNetwork(self):
         super().initNetwork()
 
@@ -86,7 +82,7 @@ class TestTwoLayerNetDirected0(TestTwoLayerNetFixture, TwoLayerNetGradientTest):
 
         self.classifier.set_batch_labels(np.array([0, 5, 1]))
 
-    def xtest_forward_fc_only(self):
+    def test_forward_fc_only(self):
         self.forward = compose(self.layer0.forward, self.layer0_activations.forward,
                                self.layer1.forward, self.layer1_activations.forward)
 
@@ -101,7 +97,7 @@ class TestTwoLayerNetDirected0(TestTwoLayerNetFixture, TwoLayerNetGradientTest):
         scores = self.forward(self.forward_input)
         self.assertTrue(np.allclose(scores, correct_scores))
 
-    def xtest_forward(self):
+    def test_forward(self):
         self.classifier.set_batch_labels(np.array([0, 5, 1]))
         self.assertAlmostEqual(self.forward(self.forward_input), 3.4702243556)
 
