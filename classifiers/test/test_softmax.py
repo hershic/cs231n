@@ -11,10 +11,8 @@ from lib.gradient_check import eval_numerical_gradient
 
 cifar10_dir = 'datasets/cifar-10-batches-py'
 
-# TODO: clean this up! There's so much duplicated code below...
 
-
-class ClassifierSoftmaxGradientTest():
+class ClassifierSoftmaxGradientTest:
     def testGradientNaive(self):
         self.classifier.forward_naive(self.scores)
         analyticGradient = self.classifier.gradient.copy()
