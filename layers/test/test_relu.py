@@ -5,7 +5,7 @@ from layers.relu import LayerReLU
 from layers.fully_connected import LayerFullyConnected
 
 from lib.gradient_check import eval_numerical_gradient_array
-from utils.compose import compose
+from utils.functors import chain
 
 
 class TestLayerReLUDirected0(unittest.TestCase):
@@ -44,8 +44,8 @@ class TestLayerFullyConnectedWithLayerReLU(unittest.TestCase):
         self.layer1 = LayerReLU()
 
     def testGradientsFullyConnectedWithReLU(self):
-        run_layers_forward = compose(self.layer0.forward, self.layer1.forward)
-        run_layers_backward = compose(self.layer1.backward, self.layer0.backward)
+        run_layers_forward = chain(self.layer0.forward, self.layer1.forward)
+        run_layers_backward = chain(self.layer1.backward, self.layer0.backward)
 
         # for side-effects
         run_layers_forward(self.forward_input)

@@ -7,7 +7,7 @@ from layers.fully_connected import LayerFullyConnected
 from regularizers.l2 import RegularizerL2
 
 from lib.gradient_check import eval_numerical_gradient
-from utils.compose import compose
+from utils.functors import chain
 
 
 class TestTwoLayerNetFixture(unittest.TestCase):
@@ -33,10 +33,10 @@ class TestTwoLayerNetFixture(unittest.TestCase):
         self.regularizer.addLayer(self.layer0)
         self.regularizer.addLayer(self.layer1)
 
-        self.forward = compose(self.layer0.forward, self.layer0_activations.forward,
+        self.forward = chain(self.layer0.forward, self.layer0_activations.forward,
                                self.layer1.forward, self.layer1_activations.forward,
                                self.classifier.forward)
-        self.backward = compose(self.classifier.backward,
+        self.backward = chain(self.classifier.backward,
                                 self.layer1_activations.backward, self.layer1.backward,
                                 self.layer0_activations.backward, self.layer0.backward)
 
@@ -83,7 +83,7 @@ class TestTwoLayerNetDirected0(TestTwoLayerNetFixture, TwoLayerNetGradientTest):
         self.classifier.set_batch_labels(np.array([0, 5, 1]))
 
     def test_forward_fc_only(self):
-        self.forward = compose(self.layer0.forward, self.layer0_activations.forward,
+        self.forward = chain(self.layer0.forward, self.layer0_activations.forward,
                                self.layer1.forward, self.layer1_activations.forward)
 
         correct_scores = np.array(
