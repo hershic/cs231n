@@ -2,6 +2,6 @@ import functools
 
 
 def compose(*functions):
-    def compose2(f, g):
+    def composed(f, g):
         return lambda x: f(g(x))
-    return functools.reduce(compose2, functions[::-1], lambda x: x)
+    return functools.reduce(composed, functions[::-1], lambda x: x)
